@@ -1,44 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import openSocket from 'socket.io-client'
+import { Player } from '../classes/Player';
 
-const socket = openSocket('http://localhost:3001');
 
-const ROOM_CAPACITY = 2;
+const ROOM_CAPACITY = 4;
 
 function RoomList(props) {
-    console.log(props)
     let socket = props.socket;
-    const [roomList, setRooms] = useState();
-    const [userID, setUserID] = useState();   
+    const [roomList, setRooms] = useState(); 
     const [roomName, setRoomName] = useState();
     
     useEffect(() => {
         socket.on('return-rooms', (rooms) => {
             setRooms(rooms);
         });
-        socket.on('new-user', s => {
-            setUserID(s);
-        })
+        
     })
 
 
     const createRoom = (e) => {
         e.preventDefault();
-
+        let p = new Player(socket.id)
         let roomData = {
-            host: userID,
+            host: socket.id,
             name: roomName,
-            members : 1
+            players: [p]
         };
         socket.emit('create-room', roomData);
-        props.routerProps.history.push(`/cardroom/${roomData.host}`);
+        props.routerProps.history.push(`/cardroom/${roomData.name}`);
     }
 
-    const joinRoom = (host) => {
-        setRooms(roomList.filter(r => r.host !== host));
-        socket.emit('join-room', host)
-        props.routerProps.history.push(`/cardroom/${host}`);
+    const joinRoom = (name, e) => {
+        e.preventDefault();
+        setRooms(roomList.filter(r => r.name !== name));
+        let p = new Player(socket.id);
+        socket.emit('join-room', {name: name, player: p})
+        props.routerProps.history.push(`/cardroom/${name}`);
     }
 
     return (
@@ -46,9 +43,9 @@ function RoomList(props) {
             <h3>RoomList</h3>
             <ul>
                 {roomList && roomList.map(room => {
-                    if (room.members < ROOM_CAPACITY) {
+                    if (room.players.length < ROOM_CAPACITY) {
                         return (
-                        <li>Room Name: {room.name} || Room Host: {room.host} || Members: {room.members} / {ROOM_CAPACITY} <Link path={`/cardroom/${room.host}`}><button onClick={() => joinRoom(room.host)}>Join</button></Link></li> 
+                        <li>Room Name: {room.name} || Room Host: {room.host} || Members: {room.players.length} / {ROOM_CAPACITY} <button onClick={(e) => joinRoom(room.name, e)}>Join</button></li> 
                         )
                 }})}
             </ul>
