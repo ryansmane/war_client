@@ -1,13 +1,11 @@
 .enemy-side {
   display: flex;
   justify-content: center;
-  height: 30vh;
 }
 
 .my-side {
   display: flex;
   justify-content: center;
-  height: 40vh;
 }
 
 .enemy-card-back {
@@ -18,4 +16,48 @@
 .my-card-back {
   height: 80%;
   width: 80%;
+}
+
+/* my card container */
+.my-flex {
+  display: flex;
+  flex-direction: column;
+}
+.flex-light {
+  align-items: flex-end;
+}
+.flex-back {
+  text-align: center;
+  padding:0;
+  margin:0;
+}
+.flex-name {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+}
+
+h4 {
+  padding: 0px;
+  margin: 0;
+}
+
+.light {
+  height: 75%;
+  width: 60%;
+}
+.h {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.enemy-cards {
+  display: flex;
+}
+
+.staging-card {
+  height: 80px;
+  width: 60px;
 }
