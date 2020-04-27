@@ -1,3 +1,21 @@
-.enemy-decks {
+.enemy-side {
   display: flex;
+  justify-content: center;
+  height: 30vh;
+}
+
+.my-side {
+  display: flex;
+  justify-content: center;
+  height: 40vh;
+}
+
+.enemy-card-back {
+  height: 40%;
+  width: 40%;
+}
+
+.my-card-back {
+  height: 80%;
+  width: 80%;
 }

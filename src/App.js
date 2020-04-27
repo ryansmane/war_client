@@ -13,7 +13,7 @@ function App() {
    
   return (
      <>
-        <Header />
+        {/* <Header /> */}
         <Switch>
            <Route exact path='/' render={(routerProps) => {
               return <RoomList socket={socket} routerProps={routerProps} />
