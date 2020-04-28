@@ -6,43 +6,17 @@ import { generatePath } from 'react-router';
 
 function Room(props) {
    let socket = props.socket;
-   const [myDeck, setMyDeck] = useState();
-   const [otherPlayers, setOtherPlayers] = useState();
-   const [roomName, setRoomName] = useState();
-   const [lightBeam, setLightBeam] = useState(false);
-   const [falseFlag, setFalseFlag] = useState(false);
-   const [battling, setBattling] = useState(false);
+   const [host, setHost] = useState();
+   const [allReadyFlag, setAllReadyFlag] = useState(false);
+   const [personalReadyFlag, setPersonalReadyFlag] = useState(false);
 
    useEffect(() => {
-      socket.on('get-all-players', (room) => {
-         let players = room.players;
-         let myPlayer = players.filter((p) => p.id === socket.id);
-         let otherPlayers = players.filter((p) => p.id !== socket.id);
-         setRoomName(room.name);
-         setMyDeck(myPlayer[0].deck);
-         setOtherPlayers(otherPlayers);
-        
-      });
+      setHost(props.routerProps.location.pathname.substring(10));
 
-      socket.on('return-after-click', (data) => {
-         let myPlayer = data.players.filter((p) => p.id === socket.id);
-         let otherPlayers = data.players.filter((p) => p.id !== socket.id);
-         if (data.all) {
-            setBattling(true);
-            setFalseFlag(true);
-            setTimeout(() => {
-               setMyDeck(myPlayer[0].deck);
-               setOtherPlayers(otherPlayers);
-               setFalseFlag(false);
-               setLightBeam(false);
-               setBattling(false);
-            }, 2000)
-            
-         } else {
-         setMyDeck(myPlayer[0].deck);
-         setOtherPlayers(otherPlayers);
-         }
-      });
+      socket.on('all-ready', room => {
+         setAllReadyFlag(true);
+         console.log(room)
+      } )
    });
 
    function getPath(pip, suit) {
@@ -56,12 +30,26 @@ function Room(props) {
       let fileName = pip < 11 ? '/images/card_sprites/' + pip.toString() + suit + '.png' : 
          '/images/card_sprites/' + map[pip] + suit + '.png';
       return fileName;
-      
+   }
+
+   function setReadyStatus(e) {
+      e.preventDefault();
+      setPersonalReadyFlag(true);
+      socket.emit('ready-up', host);
    }
 
    return (
       <div>
-         {!myDeck && !otherPlayers && <h1>Receiving Deck...</h1>}
+         {!allReadyFlag && !personalReadyFlag && <button onClick={e => setReadyStatus(e)}>Ready</button>}
+         {!allReadyFlag && personalReadyFlag &&
+            <h1>Waiting for other players to ready up...</h1>
+         }
+         {allReadyFlag && (
+            <h1>AllReady</h1>
+         )}
+
+         
+         {/* {!myDeck && !otherPlayers && <h1>Receiving Deck...</h1>}
          {myDeck && otherPlayers && (
             <>
                <div className='enemy-side'>
@@ -84,8 +72,8 @@ function Room(props) {
                                  </div>
                               </div>
 
-                              <div className='flex-back'>
-                                 <img
+                              <div className='flex-back' >
+                                 <img style={player.id === winningID ? { border: '10px solid green' } : { border: 'none' }}
                                     className='enemy-card-back'
                                     src={cardBack}
                                     alt='A poorly-drawn card back'
@@ -143,7 +131,7 @@ function Room(props) {
                            });
                         }}
                      >
-                        <img
+                        <img style={socket.id === winningID ? { border: '10px solid green' } : { border: 'none' }}
                            className='my-card-back'
                            src={cardBack}
                            alt='A poorly-drawn card back'
@@ -164,7 +152,7 @@ function Room(props) {
                   </div>
                </div>
             </>
-         )}
+         )} */}
       </div>
    );
 }

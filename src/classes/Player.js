@@ -3,6 +3,7 @@ class Player {
         this.id = id;
         this.clicked = false;
         this.deck = [];
+        this.ready = false;
         
 
     }
