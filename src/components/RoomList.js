@@ -17,7 +17,7 @@ function RoomList(props) {
         socket.on('all-players-in', id => {
             props.routerProps.history.push(`/cardroom/${id}`);
         })
-    })
+    }, [])
 
 
     const createRoom = (e) => {
@@ -27,6 +27,7 @@ function RoomList(props) {
         let roomData = {
             host: socket.id,
             name: roomName,
+            assigned: false,
             player: p,
             capacity: 2
         };

@@ -1,36 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import cardBack from '../imgs/card_back_war.png';
-import redLight from '../imgs/off_button_war.png';
-import greenLight from '../imgs/on_button_war.png';
-import { generatePath } from 'react-router';
+import WarStage from './WarStage'
+import Arena from './Arena'
 
 function Room(props) {
    let socket = props.socket;
    const [host, setHost] = useState();
    const [allReadyFlag, setAllReadyFlag] = useState(false);
    const [personalReadyFlag, setPersonalReadyFlag] = useState(false);
-
+   const [warring, setWarringFlag] = useState();
+   const [battleData, setBattleData] = useState();
    useEffect(() => {
       setHost(props.routerProps.location.pathname.substring(10));
 
-      socket.on('all-ready', room => {
+      socket.on('all-ready', data => {
          setAllReadyFlag(true);
-         console.log(room)
+         setWarringFlag(data.warFlag);
+         setBattleData(data);
       } )
    });
-
-   function getPath(pip, suit) {
-      let map = {
-         11: 'J',
-         12: 'Q',
-         13: 'K',
-         14: 'A'
-      } 
-
-      let fileName = pip < 11 ? '/images/card_sprites/' + pip.toString() + suit + '.png' : 
-         '/images/card_sprites/' + map[pip] + suit + '.png';
-      return fileName;
-   }
 
    function setReadyStatus(e) {
       e.preventDefault();
@@ -44,8 +31,15 @@ function Room(props) {
          {!allReadyFlag && personalReadyFlag &&
             <h1>Waiting for other players to ready up...</h1>
          }
+         {warring && allReadyFlag && (
+            <WarStage data={battleData} mySocket={socket.id}/>
+         )}
+         {!warring && allReadyFlag && (
+            <Arena data={battleData} mySocket={socket.id}/>
+            )
+         }
          {allReadyFlag && (
-            <h1>AllReady</h1>
+            <button onClick={e => setReadyStatus(e)}>Shoot</button>
          )}
 
          
