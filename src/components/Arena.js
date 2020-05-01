@@ -6,7 +6,7 @@ function Arena(props) {
 
    useEffect(() => {
       if (props.data && props.mySocket) {
-         let info = props.data.info;
+         let info = props.data.info[0];
 
          let enemies = [];
          for (let i = 0; i < info.length; i++) {
@@ -45,7 +45,7 @@ function Arena(props) {
                   {enemies.map((e) => {
                      return (
                         <div className='single-enemy'>
-                           <img
+                           <img className='card'
                               src={getPath(e.top.pip, e.top.suit)}
                               alt={`${e.top.pip} ${e.top.suit}`}
                            ></img>
@@ -54,7 +54,7 @@ function Arena(props) {
                   })}
                </div>
                <div className='my-card'>
-                  <img
+                  <img className='card'
                      src={getPath(me.top.pip, me.top.suit)}
                      alt={`${me.top.pip} ${me.top.suit}`}
                   ></img>

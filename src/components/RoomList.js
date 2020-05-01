@@ -17,18 +17,17 @@ function RoomList(props) {
         socket.on('all-players-in', id => {
             props.routerProps.history.push(`/cardroom/${id}`);
         })
-    }, [])
+    },[])
 
 
     const createRoom = (e) => {
         e.preventDefault();
         setWaiting(true);
-        let p = new Player(socket.id)
+        // let p = new Player(socket.id)
         let roomData = {
             host: socket.id,
             name: roomName,
             assigned: false,
-            player: p,
             capacity: 2
         };
         socket.emit('create-room', roomData);
@@ -38,8 +37,8 @@ function RoomList(props) {
     const joinRoom = (host, name, e) => {
         setWaiting(true)
         e.preventDefault();
-        let player = new Player(socket.id);
-        socket.emit('join-room', {host, player, name})
+        // let player = new Player(socket.id);
+        socket.emit('join-room', {host, name})
         
     }
 

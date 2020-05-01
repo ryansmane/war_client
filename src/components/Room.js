@@ -1,153 +1,115 @@
 import React, { useEffect, useState } from 'react';
-import WarStage from './WarStage'
-import Arena from './Arena'
+import WarStage from './WarStage';
 
 function Room(props) {
    let socket = props.socket;
    const [host, setHost] = useState();
-   const [allReadyFlag, setAllReadyFlag] = useState(false);
-   const [personalReadyFlag, setPersonalReadyFlag] = useState(false);
-   const [warring, setWarringFlag] = useState();
-   const [battleData, setBattleData] = useState();
+   const [players, setPlayers] = useState();
+   const [initFlag, setInitFlag] = useState(false);
+   const [readyPlayers, setReadyPlayers] = useState();
+
    useEffect(() => {
       setHost(props.routerProps.location.pathname.substring(10));
 
-      socket.on('all-ready', data => {
-         setAllReadyFlag(true);
-         setWarringFlag(data.warFlag);
-         setBattleData(data);
-      } )
-   });
+      socket.on('return-all-players', (players) => {
+         setPlayers(players);
+      });
 
-   function setReadyStatus(e) {
-      e.preventDefault();
-      setPersonalReadyFlag(true);
+      socket.on('one-ready', (data) => {
+         setReadyPlayers(data.players);
+
+         if (Object.values(data.players).length === data.roomCap) {
+            console.log('need to get emit something for new cards');
+         }
+      });
+   }, []);
+
+   function initMyself() {
+      setInitFlag(true);
+      socket.emit('init-one-player', host);
+   }
+
+   function shoot() {
       socket.emit('ready-up', host);
    }
 
-   return (
-      <div>
-         {!allReadyFlag && !personalReadyFlag && <button onClick={e => setReadyStatus(e)}>Ready</button>}
-         {!allReadyFlag && personalReadyFlag &&
-            <h1>Waiting for other players to ready up...</h1>
-         }
-         {warring && allReadyFlag && (
-            <WarStage data={battleData} mySocket={socket.id}/>
-         )}
-         {!warring && allReadyFlag && (
-            <Arena data={battleData} mySocket={socket.id}/>
-            )
-         }
-         {allReadyFlag && (
-            <button onClick={e => setReadyStatus(e)}>Shoot</button>
-         )}
+   function getPath(pip, suit) {
+      let map = {
+         11: 'J',
+         12: 'Q',
+         13: 'K',
+         14: 'A',
+      };
 
-         
-         {/* {!myDeck && !otherPlayers && <h1>Receiving Deck...</h1>}
-         {myDeck && otherPlayers && (
+      let fileName =
+         pip < 11
+            ? '/images/card_sprites/' + pip.toString() + suit + '.png'
+            : '/images/card_sprites/' + map[pip] + suit + '.png';
+      return fileName;
+   }
+
+   return (
+      <>
+         {host && !players && !initFlag && (
+            <>
+               <h1>{host}</h1>
+               <button onClick={() => initMyself()}>Ready</button>
+            </>
+         )}
+         {host && !players && initFlag && (
+            <h1>Waiting for other players to ready up...</h1>
+         )}
+         {host && players && initFlag && (
             <>
                <div className='enemy-side'>
-                  {otherPlayers.map((player) => {
-                     return (
-                        <>
-                           <div className='my-flex'>
-                              <div className='flex-name'>
-                                 <div className='h'>
-                                    <h4>{player.id}</h4>
-                                 </div>
-                                 <div className='flex-light'>
-                                    <img
-                                       className='light'
-                                       src={
-                                          player.clicked || falseFlag ? greenLight : redLight
-                                       }
-                                       alt='light-indicator'
-                                    ></img>
-                                 </div>
-                              </div>
-
-                              <div className='flex-back' >
-                                 <img style={player.id === winningID ? { border: '10px solid green' } : { border: 'none' }}
-                                    className='enemy-card-back'
-                                    src={cardBack}
-                                    alt='A poorly-drawn card back'
+                  {players.map((player) => {
+                     if (player.id !== socket.id) {
+                        return (
+                           <>
+                              <div className='enemy-unit'>
+                                 <p>{player.id}</p>
+                                 <img
+                                    className='enemy-backs'
+                                    src='/images/card_back_war.png'
+                                    alt='enemy back'
                                  ></img>
                               </div>
-                           </div>
-                        </>
-                     );
+                              <div className='enemystaging'>
+                                 {readyPlayers && readyPlayers[player.id] && (
+                                    <img
+                                       src={getPath(
+                                          readyPlayers[player.id].pip,
+                                          readyPlayers[player.id].suit
+                                       )}
+                                    ></img>
+                                 )}
+                              </div>
+                           </>
+                        );
+                     }
                   })}
                </div>
-               
-                  <div className='battleground'>
-                     <div className='enemy-cards'>
-                        {otherPlayers.map(player => {
-                           return (
-                              <div className='enemy-card'>
-                                 {!battling && <img
-                                 className='staging-card'
-                                    style={player.clicked ? { visibility: 'visible'} : { visibility: 'hidden'}}
-                                    src={cardBack}
-                                    alt='staging enemy card'
-                                 ></img>}
-                                 {battling && <div>
-                                    <img className='staging-card' src={getPath(player.deck[0].pip, player.deck[0].suit)} alt={`${player.deck[0].pip} ${player.deck[0].suit}`}></img>
-                                 </div>}
-
-                              </div>
-                           );
-                        })}
-                     </div>
-                     <div className='my-card'>
-                        
-                     {!battling && <img
-                        className='staging-card'
-                        style={lightBeam ? { visibility: 'visible' } : { visibility: 'hidden' }}
-                        src={cardBack}
-                        alt='staging enemy card'
-                     ></img>}
-                     {battling && <div>
-                        <img className='staging-card' src={getPath(myDeck[0].pip, myDeck[0].suit)} alt={`${myDeck[0].pip} ${myDeck[0].suit}`}></img>
-                     </div>}
-                     </div>
-                  </div>
-               
-
+               <div className='battlefield'>
+                  <div className='enemy-cards'></div>
+                  <div className='enemy-cards'></div>
+               </div>
                <div className='my-side'>
-                  <div className='my-flex'>
-                     <div
-                        className='flex-back'
-                        onClick={() => {
-                           setLightBeam(true);
-                           socket.emit('clicked', {
-                              name: roomName,
-                              id: socket.id,
-                           });
-                        }}
-                     >
-                        <img style={socket.id === winningID ? { border: '10px solid green' } : { border: 'none' }}
-                           className='my-card-back'
-                           src={cardBack}
-                           alt='A poorly-drawn card back'
+                  <div className='mystaging'>
+                     {readyPlayers && readyPlayers[socket.id] && (
+                        <img
+                           src={getPath(
+                              readyPlayers[socket.id].pip,
+                              readyPlayers[socket.id].suit
+                           )}
                         ></img>
-                     </div>
-                     <div className='flex-name'>
-                        <div className='h'>
-                           <h4>{socket.id}</h4>
-                        </div>
-                        <div className='flex-light'>
-                           <img
-                              className='light'
-                              src={lightBeam ? greenLight : redLight}
-                              alt='light-indicator'
-                           ></img>
-                        </div>
-                     </div>
+                     )}
                   </div>
+                  <h2>{socket.id}</h2>
+                  <button onClick={() => shoot()}>Shoot</button>
                </div>
             </>
-         )} */}
-      </div>
+         )}
+      </>
    );
 }
 
