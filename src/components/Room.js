@@ -19,7 +19,8 @@ function Room(props) {
          setReadyPlayers(data.players);
 
          if (Object.values(data.players).length === data.roomCap) {
-            console.log('need to get emit something for new cards');
+            console.log('refresh')
+            socket.emit('refresh-cards', props.routerProps.location.pathname.substring(10));
          }
       });
    }, []);
@@ -76,12 +77,22 @@ function Room(props) {
                               </div>
                               <div className='enemystaging'>
                                  {readyPlayers && readyPlayers[player.id] && (
-                                    <img
-                                       src={getPath(
-                                          readyPlayers[player.id].pip,
-                                          readyPlayers[player.id].suit
-                                       )}
-                                    ></img>
+                                    <>
+                                       <img
+                                          src={getPath(
+                                             readyPlayers[player.id].card.pip,
+                                             readyPlayers[player.id].card.suit
+                                          )}
+                                          alt={`${
+                                             readyPlayers[player.id].card.pip
+                                          }${
+                                             readyPlayers[player.id].card.suit
+                                          }`}
+                                       ></img>
+                                       <p>
+                                          {readyPlayers[player.id].stack} / 52
+                                       </p>
+                                    </>
                                  )}
                               </div>
                            </>
@@ -96,12 +107,18 @@ function Room(props) {
                <div className='my-side'>
                   <div className='mystaging'>
                      {readyPlayers && readyPlayers[socket.id] && (
-                        <img
-                           src={getPath(
-                              readyPlayers[socket.id].pip,
-                              readyPlayers[socket.id].suit
-                           )}
-                        ></img>
+                        <>
+                           <img
+                              src={getPath(
+                                 readyPlayers[socket.id].card.pip,
+                                 readyPlayers[socket.id].card.suit
+                              )}
+                              alt={`${readyPlayers[socket.id].card.pip}${
+                                 readyPlayers[socket.id].card.suit
+                              }`}
+                           ></img>
+                           <p>{readyPlayers[socket.id].stack} / 52</p>
+                        </>
                      )}
                   </div>
                   <h2>{socket.id}</h2>

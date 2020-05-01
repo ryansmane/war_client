@@ -28,7 +28,7 @@ function RoomList(props) {
             host: socket.id,
             name: roomName,
             assigned: false,
-            capacity: 2
+            capacity: 4
         };
         socket.emit('create-room', roomData);
         
