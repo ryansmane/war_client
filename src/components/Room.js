@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import WarStage from './WarStage';
+const _ = require('lodash');
 
 function Room(props) {
    let socket = props.socket;
@@ -7,22 +8,50 @@ function Room(props) {
    const [players, setPlayers] = useState();
    const [initFlag, setInitFlag] = useState(false);
    const [readyPlayers, setReadyPlayers] = useState();
+   const [warState, setWarState] = useState(false);
+   const [warringPlayers, setWarringPlayers] = useState();
+   const [deckLengths, setDeckLengths] = useState();
+   const [winner, setWinner] = useState(false);
 
    useEffect(() => {
       setHost(props.routerProps.location.pathname.substring(10));
 
-      socket.on('return-all-players', (players) => {
-         setPlayers(players);
+      socket.on('return-all-players', (data) => {
+         setPlayers(data.players);
+         setDeckLengths(data.deckLengths);
       });
 
       socket.on('one-ready', (data) => {
          setReadyPlayers(data.players);
-
-         if (Object.values(data.players).length === data.roomCap) {
-            console.log('refresh')
+         setDeckLengths(data.deckLengths);
+         if (data.winner) {
+            setWinner(data.winner);
+         } else {
+            setWinner(false);
+         }
+         if (Object.values(data.players).length === data.roomCap  && !data.war) {
+            setTimeout(() => {
             socket.emit('refresh-cards', props.routerProps.location.pathname.substring(10));
+            }, 1500);
          }
       });
+
+      socket.on('resolved', data => {
+         setWarState(false);
+         setReadyPlayers(data.warHistory);
+         setWarringPlayers({});
+         setTimeout(() => {
+         setDeckLengths(data.deckLengths);
+         setReadyPlayers(data.players);
+         
+         }, 1500);
+      })
+
+      socket.on('war', players => {
+         setWarState(true)
+         setWarringPlayers(players);
+      })
+
    }, []);
 
    function initMyself() {
@@ -32,6 +61,10 @@ function Room(props) {
 
    function shoot() {
       socket.emit('ready-up', host);
+   }
+
+   function resolveWar() {
+      socket.emit('need-resolution', {host, warringPlayers});
    }
 
    function getPath(pip, suit) {
@@ -76,9 +109,24 @@ function Room(props) {
                                  ></img>
                               </div>
                               <div className='enemystaging'>
+                                 <p>
+                                    {deckLengths &&
+                                       `${deckLengths[player.id]}/ 52`}
+                                 </p>
                                  {readyPlayers && readyPlayers[player.id] && (
                                     <>
                                        <img
+                                          className='card'
+                                          style={
+                                             warState &&
+                                             warringPlayers &&
+                                             !_.isEmpty(warringPlayers) &&
+                                             warringPlayers[player.id]
+                                                ? { border: '5px solid red' }
+                                                : winner && winner === player.id
+                                                ? { border: '5px solid green' }
+                                                : { border: 'none' }
+                                          }
                                           src={getPath(
                                              readyPlayers[player.id].card.pip,
                                              readyPlayers[player.id].card.suit
@@ -89,9 +137,6 @@ function Room(props) {
                                              readyPlayers[player.id].card.suit
                                           }`}
                                        ></img>
-                                       <p>
-                                          {readyPlayers[player.id].stack} / 52
-                                       </p>
                                     </>
                                  )}
                               </div>
@@ -109,6 +154,17 @@ function Room(props) {
                      {readyPlayers && readyPlayers[socket.id] && (
                         <>
                            <img
+                              className='card'
+                              style={
+                                 warState &&
+                                 warringPlayers &&
+                                 !_.isEmpty(warringPlayers) &&
+                                 warringPlayers[socket.id] 
+                                    ? { border: '5px solid red' }
+                                    : winner && winner === socket.id
+                                    ? { border: '5px solid green' }
+                                    : { border: 'none' }
+                              }
                               src={getPath(
                                  readyPlayers[socket.id].card.pip,
                                  readyPlayers[socket.id].card.suit
@@ -117,12 +173,17 @@ function Room(props) {
                                  readyPlayers[socket.id].card.suit
                               }`}
                            ></img>
-                           <p>{readyPlayers[socket.id].stack} / 52</p>
                         </>
                      )}
                   </div>
+                  <p>{deckLengths && `${deckLengths[socket.id]} / 52`}</p>
                   <h2>{socket.id}</h2>
-                  <button onClick={() => shoot()}>Shoot</button>
+                  {!warState && (
+                     <button onClick={() => shoot()}>Deploy!</button>
+                  )}
+                  {warState && warringPlayers && warringPlayers[socket.id] && !readyPlayers[socket.id].changed && (
+                     <button onClick={() => resolveWar()}>Fight!</button>
+                  )}
                </div>
             </>
          )}
