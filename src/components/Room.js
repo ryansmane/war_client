@@ -12,12 +12,14 @@ function Room(props) {
    const [warringPlayers, setWarringPlayers] = useState();
    const [deckLengths, setDeckLengths] = useState();
    const [winner, setWinner] = useState(false);
+   const [deactivated, setDeactivated] = useState(false);
 
    useEffect(() => {
       setHost(props.routerProps.location.pathname.substring(10));
 
       socket.on('return-all-players', (data) => {
-         setPlayers(Object.values(data.players));
+         setPlayers(data.players);
+         setDeactivated(data.deactivate);
          setDeckLengths(data.deckLengths);
       });
 
@@ -36,9 +38,6 @@ function Room(props) {
       });
 
       socket.on('resolved', data => {
-         
-         
-         
          setWarState(false);
          setReadyPlayers(data.warHistory);
          setWarringPlayers({});
@@ -52,7 +51,9 @@ function Room(props) {
 
       socket.on('war', data => {
          setWinner(false);
+         
          if (data.players) {
+         console.log(data.warPlayers)
          setReadyPlayers(data.players);
          setWarState(false);
          setTimeout(() => {
@@ -115,14 +116,14 @@ function Room(props) {
                            <>
                               <div className='enemy-unit'>
                                  <p>{player.id}</p>
-                                 <img
+                                 {player.active && <img
                                     style={winner && winner === player.id
                                        ? { border: '5px solid green' }
                                        : { border: 'none' }}
                                     className='enemy-backs'
                                     src='/images/card_back_war.png'
                                     alt='enemy back'
-                                 ></img>
+                                 ></img>}
                               </div>
                               <div className='enemystaging'>
                                  <p>
@@ -159,11 +160,7 @@ function Room(props) {
                      }
                   })}
                </div>
-               <div className='battlefield'>
-                  <div className='enemy-cards'></div>
-                  <div className='enemy-cards'></div>
-               </div>
-               <div className='my-side'>
+               {!deactivated && <div className='my-side'>
                   <div className='mystaging'>
                      {readyPlayers && readyPlayers[socket.id] && (
                         <>
@@ -198,7 +195,7 @@ function Room(props) {
                   {warState && warringPlayers && warringPlayers[socket.id] && !readyPlayers[socket.id].changed && (
                      <button onClick={() => resolveWar()}>Fight!</button>
                   )}
-               </div>
+               </div>}
             </>
          )}
       </>
