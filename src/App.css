@@ -1,14 +1,14 @@
 .enemy-side {
   display: flex;
   justify-content: center;
-}
+} 
 
 .my-side {
   display: flex;
   justify-content: center;
 }
 
-.enemy-card-back {
+/*.enemy-card-back {
   height: 40%;
   width: 40%;
 }
@@ -16,10 +16,10 @@
 .my-card-back {
   height: 80%;
   width: 80%;
-}
+} */
 
 /* my card container */
-.my-flex {
+/* .my-flex {
   display: flex;
   flex-direction: column;
 }
@@ -53,11 +53,39 @@ h4 {
   justify-content: flex-end;
 }
 
-.enemy-cards {
-  display: flex;
-}
 
 .staging-card {
   height: 80px;
   width: 60px;
+}
+
+.battleground {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+} */ 
+
+.enemy-backs {
+  width: 80px;
+  height: 60px;
+}
+
+.staging-backs {
+  width: 70px;
+  height: 50px;
+}
+
+.card {
+  width: 70px;
+  height: 50px;
+}
+
+.enemy-cards {
+  display: flex;
+  justify-content: center;
+}
+
+.my-card {
+  display: flex;
+  justify-content: center;
 }

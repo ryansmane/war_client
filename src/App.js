@@ -18,8 +18,8 @@ function App() {
            <Route exact path='/' render={(routerProps) => {
               return <RoomList socket={socket} routerProps={routerProps} />
            }}/>
-           <Route path='/cardroom/:roomID' render={() => {
-              return <Room socket={socket} />
+           <Route path='/cardroom/:roomID' render={(routerProps) => {
+              return <Room socket={socket} routerProps={routerProps} />
            }} />
         </Switch>
      </>

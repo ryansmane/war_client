@@ -3,56 +3,70 @@ import { Link } from 'react-router-dom';
 import { Player } from '../classes/Player';
 
 
-const ROOM_CAPACITY = 4;
-
 function RoomList(props) {
     let socket = props.socket;
-    const [roomList, setRooms] = useState(); 
+    const [roomList, setRoomList] = useState(); 
     const [roomName, setRoomName] = useState();
-    
+    const [roomCap, setRoomCap] = useState();
+    const [waiting, setWaiting] = useState(false);
+
     useEffect(() => {
         socket.on('return-rooms', (rooms) => {
-            setRooms(rooms);
+            setRoomList(Object.values(rooms));
         });
-        
-    })
+
+        socket.on('all-players-in', id => {
+            props.routerProps.history.push(`/cardroom/${id}`);
+        })
+    },[])
 
 
     const createRoom = (e) => {
         e.preventDefault();
-        let p = new Player(socket.id)
+        setWaiting(true);
+        // let p = new Player(socket.id)
         let roomData = {
             host: socket.id,
             name: roomName,
-            players: [p]
+            assigned: false,
+            capacity: roomCap
         };
         socket.emit('create-room', roomData);
-        props.routerProps.history.push(`/cardroom/${roomData.name}`);
+        
     }
 
-    const joinRoom = (name, e) => {
+    const joinRoom = (host, name, e) => {
+        setWaiting(true)
         e.preventDefault();
-        setRooms(roomList.filter(r => r.name !== name));
-        let p = new Player(socket.id);
-        socket.emit('join-room', {name: name, player: p})
-        props.routerProps.history.push(`/cardroom/${name}`);
+        // let player = new Player(socket.id);
+        socket.emit('join-room', {host, name})
+        
     }
 
     return (
         <div>
+            {!waiting && (
+                <>
             <h3>RoomList</h3>
             <ul>
                 {roomList && roomList.map(room => {
-                    if (room.players.length < ROOM_CAPACITY) {
+                    if (room.capacity > Object.keys(room.players).length) {
                         return (
-                        <li>Room Name: {room.name} || Room Host: {room.host} || Members: {room.players.length} / {ROOM_CAPACITY} <button onClick={(e) => joinRoom(room.name, e)}>Join</button></li> 
+                        <li>Name:{room.name} | Members: {Object.keys(room.players).length} / {room.capacity} <button onClick={(e) => joinRoom(room.host, room.name, e)}>Join Room</button></li> 
                         )
-                }})}
-            </ul>
+                    }
+                })}
+            </ul>   
             <form className='ifield'>
-                <input type='text' onChange={(e) => setRoomName(e.target.value)}/>
+                <input placeholder='name' type='text' onChange={(e) => setRoomName(e.target.value)}/>
+                <input placeholder='capacity' type='text' onChange={(e) => setRoomCap(parseInt(e.target.value))} />
+
                 <button type='button' onClick = {(e) => createRoom(e)}>Create Room</button> 
             </form>
+            </>)}
+            {waiting && (
+                <h1>Waiting for more players...</h1>
+            )}
         </div>
     )
 }

@@ -1,171 +1,207 @@
 import React, { useEffect, useState } from 'react';
-import cardBack from '../imgs/card_back_war.png';
-import redLight from '../imgs/off_button_war.png';
-import greenLight from '../imgs/on_button_war.png';
-import { generatePath } from 'react-router';
+import WarStage from './WarStage';
+const _ = require('lodash');
 
 function Room(props) {
    let socket = props.socket;
-   const [myDeck, setMyDeck] = useState();
-   const [otherPlayers, setOtherPlayers] = useState();
-   const [roomName, setRoomName] = useState();
-   const [lightBeam, setLightBeam] = useState(false);
-   const [falseFlag, setFalseFlag] = useState(false);
-   const [battling, setBattling] = useState(false);
+   const [host, setHost] = useState();
+   const [players, setPlayers] = useState();
+   const [initFlag, setInitFlag] = useState(false);
+   const [readyPlayers, setReadyPlayers] = useState();
+   const [warState, setWarState] = useState(false);
+   const [warringPlayers, setWarringPlayers] = useState();
+   const [deckLengths, setDeckLengths] = useState();
+   const [winner, setWinner] = useState(false);
 
    useEffect(() => {
-      socket.on('get-all-players', (room) => {
-         let players = room.players;
-         let myPlayer = players.filter((p) => p.id === socket.id);
-         let otherPlayers = players.filter((p) => p.id !== socket.id);
-         setRoomName(room.name);
-         setMyDeck(myPlayer[0].deck);
-         setOtherPlayers(otherPlayers);
-        
+      setHost(props.routerProps.location.pathname.substring(10));
+
+      socket.on('return-all-players', (data) => {
+         setPlayers(Object.values(data.players));
+         setDeckLengths(data.deckLengths);
       });
 
-      socket.on('return-after-click', (data) => {
-         let myPlayer = data.players.filter((p) => p.id === socket.id);
-         let otherPlayers = data.players.filter((p) => p.id !== socket.id);
-         if (data.all) {
-            setBattling(true);
-            setFalseFlag(true);
+      socket.on('one-ready', (data) => {
+         setReadyPlayers(data.players);
+         setDeckLengths(data.deckLengths);
+         if (data.winner) {
+            setWinner(data.winner);
+         }
+         if (Object.values(data.players).length === data.roomCap  && !data.war) {
             setTimeout(() => {
-               setMyDeck(myPlayer[0].deck);
-               setOtherPlayers(otherPlayers);
-               setFalseFlag(false);
-               setLightBeam(false);
-               setBattling(false);
-            }, 2000)
-            
-         } else {
-         setMyDeck(myPlayer[0].deck);
-         setOtherPlayers(otherPlayers);
+               setWinner(false);
+            socket.emit('refresh-cards', props.routerProps.location.pathname.substring(10));
+            }, 1500);
          }
       });
-   });
+
+      socket.on('resolved', data => {
+         
+         
+         
+         setWarState(false);
+         setReadyPlayers(data.warHistory);
+         setWarringPlayers({});
+         setTimeout(() => {
+         setWinner(data.winner);
+         setDeckLengths(data.deckLengths);
+         setReadyPlayers(data.players);
+         
+         }, 1500);
+      })
+
+      socket.on('war', data => {
+         setWinner(false);
+         if (data.players) {
+         setReadyPlayers(data.players);
+         setWarState(false);
+         setTimeout(() => {
+            setWarState(true)
+            setWarringPlayers(data.warPlayers);
+         }, 1000);
+         } else {
+         setWarState(true)
+         setWarringPlayers(data);
+         }
+      })
+
+   }, []);
+
+   function initMyself() {
+      setInitFlag(true);
+      socket.emit('init-one-player', host);
+   }
+
+   function shoot() {
+      socket.emit('ready-up', host);
+   }
+
+   function resolveWar() {
+      socket.emit('need-resolution', {host, warringPlayers});
+   }
 
    function getPath(pip, suit) {
       let map = {
          11: 'J',
          12: 'Q',
          13: 'K',
-         14: 'A'
-      } 
+         14: 'A',
+      };
 
-      let fileName = pip < 11 ? '/images/card_sprites/' + pip.toString() + suit + '.png' : 
-         '/images/card_sprites/' + map[pip] + suit + '.png';
+      let fileName =
+         pip < 11
+            ? '/images/card_sprites/' + pip.toString() + suit + '.png'
+            : '/images/card_sprites/' + map[pip] + suit + '.png';
       return fileName;
-      
    }
 
    return (
-      <div>
-         {!myDeck && !otherPlayers && <h1>Receiving Deck...</h1>}
-         {myDeck && otherPlayers && (
+      <>
+         {host && !players && !initFlag && (
+            <>
+               <h1>{host}</h1>
+               <button onClick={() => initMyself()}>Ready</button>
+            </>
+         )}
+         {host && !players && initFlag && (
+            <h1>Waiting for other players to ready up...</h1>
+         )}
+         {host && players && initFlag && (
             <>
                <div className='enemy-side'>
-                  {otherPlayers.map((player) => {
-                     return (
-                        <>
-                           <div className='my-flex'>
-                              <div className='flex-name'>
-                                 <div className='h'>
-                                    <h4>{player.id}</h4>
-                                 </div>
-                                 <div className='flex-light'>
-                                    <img
-                                       className='light'
-                                       src={
-                                          player.clicked || falseFlag ? greenLight : redLight
-                                       }
-                                       alt='light-indicator'
-                                    ></img>
-                                 </div>
-                              </div>
-
-                              <div className='flex-back'>
+                  {players.map((player) => {
+                     if (player.id !== socket.id) {
+                        return (
+                           <>
+                              <div className='enemy-unit'>
+                                 <p>{player.id}</p>
                                  <img
-                                    className='enemy-card-back'
-                                    src={cardBack}
-                                    alt='A poorly-drawn card back'
+                                    style={winner && winner === player.id
+                                       ? { border: '5px solid green' }
+                                       : { border: 'none' }}
+                                    className='enemy-backs'
+                                    src='/images/card_back_war.png'
+                                    alt='enemy back'
                                  ></img>
                               </div>
-                           </div>
-                        </>
-                     );
+                              <div className='enemystaging'>
+                                 <p>
+                                    {deckLengths &&
+                                       `${deckLengths[player.id]}/ 52`}
+                                 </p>
+                                 {readyPlayers && readyPlayers[player.id] && (
+                                    <>
+                                       <img
+                                          className='card'
+                                          style={
+                                             warState &&
+                                             warringPlayers &&
+                                             !_.isEmpty(warringPlayers) &&
+                                             warringPlayers[player.id]
+                                                ? { border: '5px solid red' }
+                                                : { border: 'none' }
+                                          }
+                                          src={getPath(
+                                             readyPlayers[player.id].card.pip,
+                                             readyPlayers[player.id].card.suit
+                                          )}
+                                          alt={`${
+                                             readyPlayers[player.id].card.pip
+                                          }${
+                                             readyPlayers[player.id].card.suit
+                                          }`}
+                                       ></img>
+                                    </>
+                                 )}
+                              </div>
+                           </>
+                        );
+                     }
                   })}
                </div>
-               
-                  <div className='battleground'>
-                     <div className='enemy-cards'>
-                        {otherPlayers.map(player => {
-                           return (
-                              <div className='enemy-card'>
-                                 {!battling && <img
-                                 className='staging-card'
-                                    style={player.clicked ? { visibility: 'visible'} : { visibility: 'hidden'}}
-                                    src={cardBack}
-                                    alt='staging enemy card'
-                                 ></img>}
-                                 {battling && <div>
-                                    <img className='staging-card' src={getPath(player.deck[0].pip, player.deck[0].suit)} alt={`${player.deck[0].pip} ${player.deck[0].suit}`}></img>
-                                 </div>}
-
-                              </div>
-                           );
-                        })}
-                     </div>
-                     <div className='my-card'>
-                        
-                     {!battling && <img
-                        className='staging-card'
-                        style={lightBeam ? { visibility: 'visible' } : { visibility: 'hidden' }}
-                        src={cardBack}
-                        alt='staging enemy card'
-                     ></img>}
-                     {battling && <div>
-                        <img className='staging-card' src={getPath(myDeck[0].pip, myDeck[0].suit)} alt={`${myDeck[0].pip} ${myDeck[0].suit}`}></img>
-                     </div>}
-                     </div>
-                  </div>
-               
-
+               <div className='battlefield'>
+                  <div className='enemy-cards'></div>
+                  <div className='enemy-cards'></div>
+               </div>
                <div className='my-side'>
-                  <div className='my-flex'>
-                     <div
-                        className='flex-back'
-                        onClick={() => {
-                           setLightBeam(true);
-                           socket.emit('clicked', {
-                              name: roomName,
-                              id: socket.id,
-                           });
-                        }}
-                     >
-                        <img
-                           className='my-card-back'
-                           src={cardBack}
-                           alt='A poorly-drawn card back'
-                        ></img>
-                     </div>
-                     <div className='flex-name'>
-                        <div className='h'>
-                           <h4>{socket.id}</h4>
-                        </div>
-                        <div className='flex-light'>
+                  <div className='mystaging'>
+                     {readyPlayers && readyPlayers[socket.id] && (
+                        <>
                            <img
-                              className='light'
-                              src={lightBeam ? greenLight : redLight}
-                              alt='light-indicator'
+                              className='card'
+                              style={
+                                 warState &&
+                                 warringPlayers &&
+                                 !_.isEmpty(warringPlayers) &&
+                                 warringPlayers[socket.id] 
+                                    ? { border: '5px solid red' }
+                                    : { border: 'none' }
+                              }
+                              src={getPath(
+                                 readyPlayers[socket.id].card.pip,
+                                 readyPlayers[socket.id].card.suit
+                              )}
+                              alt={`${readyPlayers[socket.id].card.pip}${
+                                 readyPlayers[socket.id].card.suit
+                              }`}
                            ></img>
-                        </div>
-                     </div>
+                        </>
+                     )}
                   </div>
+                  <p>{deckLengths && `${deckLengths[socket.id]} / 52`}</p>
+                  <h2>{socket.id}</h2>
+                  {!warState && (
+                     <button style={winner === socket.id
+                        ? { border: '5px solid green' }
+                        : { border: 'none'}} onClick={() => shoot()}>Deploy!</button>
+                  )}
+                  {warState && warringPlayers && warringPlayers[socket.id] && !readyPlayers[socket.id].changed && (
+                     <button onClick={() => resolveWar()}>Fight!</button>
+                  )}
                </div>
             </>
          )}
-      </div>
+      </>
    );
 }
 
