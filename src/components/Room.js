@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import WarStage from './WarStage';
+import EnemyUnit from './EnemyUnit';
+import Stage from './Stage'
+import ActionSelect from './ActionSelect'
+import InitPage from './InitPage'
+
 const _ = require('lodash');
 
 function Room(props) {
@@ -9,7 +13,7 @@ function Room(props) {
    const [initFlag, setInitFlag] = useState(false);
    const [readyPlayers, setReadyPlayers] = useState();
    const [warState, setWarState] = useState(false);
-   const [warringPlayers, setWarringPlayers] = useState();
+   const [warringPlayers, setWarringPlayers] = useState({});
    const [deckLengths, setDeckLengths] = useState();
    const [winner, setWinner] = useState(false);
    const [deactivated, setDeactivated] = useState(false);
@@ -26,18 +30,16 @@ function Room(props) {
       socket.on('one-ready', (data) => {
          setReadyPlayers(data.players);
          setDeckLengths(data.deckLengths);
-         if (data.winner) {
-            setWinner(data.winner);
-         }
-         if (Object.values(data.players).length === data.roomCap  && !data.war) {
+
+         if (Object.values(data.players).length === data.roomCap && !data.war) {
             setTimeout(() => {
-               setWinner(false);
-            socket.emit('refresh-cards', props.routerProps.location.pathname.substring(10));
-            }, 1500);
+               socket.emit('refresh-cards', props.routerProps.location.pathname.substring(10));
+               }, 1500);
          }
       });
 
       socket.on('resolved', data => {
+         if (data.warHistory) {
          setWarState(false);
          setReadyPlayers(data.warHistory);
          setWarringPlayers({});
@@ -47,23 +49,21 @@ function Room(props) {
          setReadyPlayers(data.players);
          
          }, 1500);
+         } else {
+            setWarState(false);
+            setReadyPlayers(data.players);
+            setWinner(data.winner)
+            setDeckLengths(data.deckLengths);
+         }
       })
 
       socket.on('war', data => {
          setWinner(false);
-         
-         if (data.players) {
-         console.log(data.warPlayers)
+         setDeckLengths(data.deckLengths);
          setReadyPlayers(data.players);
-         setWarState(false);
-         setTimeout(() => {
-            setWarState(true)
-            setWarringPlayers(data.warPlayers);
-         }, 1000);
-         } else {
-         setWarState(true)
-         setWarringPlayers(data);
-         }
+         setWarringPlayers(data.warPlayers);
+         setWarState(true);
+         
       })
 
    }, []);
@@ -78,32 +78,14 @@ function Room(props) {
    }
 
    function resolveWar() {
-      socket.emit('need-resolution', {host, warringPlayers});
-   }
-
-   function getPath(pip, suit) {
-      let map = {
-         11: 'J',
-         12: 'Q',
-         13: 'K',
-         14: 'A',
-      };
-
-      let fileName =
-         pip < 11
-            ? '/images/card_sprites/' + pip.toString() + suit + '.png'
-            : '/images/card_sprites/' + map[pip] + suit + '.png';
-      return fileName;
+      socket.emit('need-resolution', { host, warringPlayers });
    }
 
    return (
       <>
-         {host && !players && !initFlag && (
-            <>
-               <h1>{host}</h1>
-               <button onClick={() => initMyself()}>Ready</button>
-            </>
-         )}
+         {host && !players && !initFlag &&
+            <InitPage host={host} initMyself={initMyself} />
+         }
          {host && !players && initFlag && (
             <h1>Waiting for other players to ready up...</h1>
          )}
@@ -114,46 +96,16 @@ function Room(props) {
                      if (player.id !== socket.id) {
                         return (
                            <>
-                              <div className='enemy-unit'>
-                                 <p>{player.id}</p>
-                                 {player.active && <img
-                                    style={winner && winner === player.id
-                                       ? { border: '5px solid green' }
-                                       : { border: 'none' }}
-                                    className='enemy-backs'
-                                    src='/images/card_back_war.png'
-                                    alt='enemy back'
-                                 ></img>}
-                              </div>
+                           <EnemyUnit id={player.id} active={player.active} winner={winner}/>
+                              
                               <div className='enemystaging'>
                                  <p>
                                     {deckLengths &&
                                        `${deckLengths[player.id]}/ 52`}
                                  </p>
-                                 {readyPlayers && readyPlayers[player.id] && (
-                                    <>
-                                       <img
-                                          className='card'
-                                          style={
-                                             warState &&
-                                             warringPlayers &&
-                                             !_.isEmpty(warringPlayers) &&
-                                             warringPlayers[player.id]
-                                                ? { border: '5px solid red' }
-                                                : { border: 'none' }
-                                          }
-                                          src={getPath(
-                                             readyPlayers[player.id].card.pip,
-                                             readyPlayers[player.id].card.suit
-                                          )}
-                                          alt={`${
-                                             readyPlayers[player.id].card.pip
-                                          }${
-                                             readyPlayers[player.id].card.suit
-                                          }`}
-                                       ></img>
-                                    </>
-                                 )}
+                                 {readyPlayers && readyPlayers[player.id] &&
+                                    <Stage warState={warState} warringPlayers={warringPlayers} pip={readyPlayers[player.id].card.pip} suit={readyPlayers[player.id].card.suit} id={player.id} />
+                                 }
                               </div>
                            </>
                         );
@@ -163,38 +115,12 @@ function Room(props) {
                {!deactivated && <div className='my-side'>
                   <div className='mystaging'>
                      {readyPlayers && readyPlayers[socket.id] && (
-                        <>
-                           <img
-                              className='card'
-                              style={
-                                 warState &&
-                                 warringPlayers &&
-                                 !_.isEmpty(warringPlayers) &&
-                                 warringPlayers[socket.id] 
-                                    ? { border: '5px solid red' }
-                                    : { border: 'none' }
-                              }
-                              src={getPath(
-                                 readyPlayers[socket.id].card.pip,
-                                 readyPlayers[socket.id].card.suit
-                              )}
-                              alt={`${readyPlayers[socket.id].card.pip}${
-                                 readyPlayers[socket.id].card.suit
-                              }`}
-                           ></img>
-                        </>
+                        <Stage warState={warState} warringPlayers={warringPlayers} pip={readyPlayers[socket.id].card.pip} suit={readyPlayers[socket.id].card.suit} id={socket.id} />
                      )}
                   </div>
                   <p>{deckLengths && `${deckLengths[socket.id]} / 52`}</p>
                   <h2>{socket.id}</h2>
-                  {!warState && (
-                     <button style={winner === socket.id
-                        ? { border: '5px solid green' }
-                        : { border: 'none'}} onClick={() => shoot()}>Deploy!</button>
-                  )}
-                  {warState && warringPlayers && warringPlayers[socket.id] && !readyPlayers[socket.id].changed && (
-                     <button onClick={() => resolveWar()}>Fight!</button>
-                  )}
+                  <ActionSelect warState={warState} shoot={shoot} resolveWar={resolveWar} winner={winner} warringPlayers={warringPlayers} id={socket.id} acted={readyPlayers && readyPlayers[socket.id] ? readyPlayers[socket.id].changed : null} />
                </div>}
             </>
          )}
