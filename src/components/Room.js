@@ -16,21 +16,20 @@ function Room(props) {
    const [warringPlayers, setWarringPlayers] = useState({});
    const [deckLengths, setDeckLengths] = useState();
    const [winner, setWinner] = useState(false);
-   const [deactivated, setDeactivated] = useState(false);
+   const [deactivationMap, setDeactivationMap] = useState({});
+   const [ultimateWinner, setUltimateWinner] = useState(false);
 
    useEffect(() => {
       setHost(props.routerProps.location.pathname.substring(10));
 
       socket.on('return-all-players', (data) => {
          setPlayers(data.players);
-         setDeactivated(data.deactivate);
          setDeckLengths(data.deckLengths);
       });
 
       socket.on('one-ready', (data) => {
          setReadyPlayers(data.players);
          setDeckLengths(data.deckLengths);
-
          if (Object.values(data.players).length === data.roomCap && !data.war) {
             setTimeout(() => {
                socket.emit('refresh-cards', props.routerProps.location.pathname.substring(10));
@@ -39,6 +38,14 @@ function Room(props) {
       });
 
       socket.on('resolved', data => {
+         if (data.deactivationMap) {
+            setDeactivationMap(data.deactivationMap);
+         }
+
+         if (data.ultimateWinner) {
+            setUltimateWinner(data.winner)
+         }
+
          if (data.warHistory) {
          setWarState(false);
          setReadyPlayers(data.warHistory);
@@ -96,7 +103,7 @@ function Room(props) {
                      if (player.id !== socket.id) {
                         return (
                            <>
-                           <EnemyUnit id={player.id} active={player.active} winner={winner}/>
+                           <EnemyUnit id={player.id} deactivationMap={deactivationMap} winner={winner}/>
                               
                               <div className='enemystaging'>
                                  <p>
@@ -112,7 +119,7 @@ function Room(props) {
                      }
                   })}
                </div>
-               {!deactivated && <div className='my-side'>
+               {!deactivationMap[socket.id] && <div className='my-side'>
                   <div className='mystaging'>
                      {readyPlayers && readyPlayers[socket.id] && (
                         <Stage warState={warState} warringPlayers={warringPlayers} pip={readyPlayers[socket.id].card.pip} suit={readyPlayers[socket.id].card.suit} id={socket.id} />
@@ -121,6 +128,13 @@ function Room(props) {
                   <p>{deckLengths && `${deckLengths[socket.id]} / 52`}</p>
                   <h2>{socket.id}</h2>
                   <ActionSelect warState={warState} shoot={shoot} resolveWar={resolveWar} winner={winner} warringPlayers={warringPlayers} id={socket.id} acted={readyPlayers && readyPlayers[socket.id] ? readyPlayers[socket.id].changed : null} />
+               </div>}
+
+               {deactivationMap[socket.id] && <div className='losing-screen'>
+                  <h1>YOU LOSE</h1>
+               </div>}
+               {ultimateWinner === socket.id && <div className='winning-screen'>
+                  <h1>YOU WIN</h1>
                </div>}
             </>
          )}
