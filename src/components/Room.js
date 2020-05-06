@@ -65,6 +65,9 @@ function Room(props) {
       })
 
       socket.on('war', data => {
+         if (data.deactivationMap) {
+            setDeactivationMap(data.deactivationMap)
+         }
          setWinner(false);
          setDeckLengths(data.deckLengths);
          setReadyPlayers(data.players);
