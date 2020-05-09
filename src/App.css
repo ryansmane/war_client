@@ -13,6 +13,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding-left: 320px;
 }
 
 .enemy-slot {
@@ -55,17 +56,21 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  width: 80%;
+  border: 3px solid black;
+  min-height: 100%;
+  padding-top: 25px;
   
 }
 
 .felt-container {
   display: flex;
   justify-content: center;
-  border: 3px solid black;
-  width: 90%;
-  margin-top: 25px;
-  padding: 100px 0px;
-  padding-bottom: 150px;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+  padding-top: 25px;
 }
 
 .action-select {
@@ -73,11 +78,6 @@
   flex-direction: column;
 }
 
-.felt-partition {
-  min-height: 10%;
-  text-align: center;
-  position: relative;
-}
 
 .action-partition {
   min-width: 6%;
@@ -125,6 +125,25 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.chat-box {
+  border: 1px solid black;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.side-container {
+  display: flex;
+}
+
+
+.felt-partition {
+  min-height: 60px;
+  text-align: center;
+  position: relative;
 }
 /* .animation-card {
   animation-duration: 1.2s;

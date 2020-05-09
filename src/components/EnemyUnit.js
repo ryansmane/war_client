@@ -2,7 +2,6 @@ import React from 'react';
 const _ = require('lodash');
 
 function EnemyUnit(props) {
-    console.log(props.winner, props.id);
     return (
         <div className='enemy-unit'>
             {props.warState && !_.isEmpty(props.warringPlayers) && props.warringPlayers[props.id] && <div className='enemy-info-at-war'>
@@ -16,7 +15,6 @@ function EnemyUnit(props) {
                 <span>{props.name}</span>
             </div>}
             {!props.warState && !props.warringPlayers[props.id] && <div>
-                {props.winner === props.id && <img className='crown' src='/images/crown.png' alt='winner'></img>}
                 {props.warState && !_.isEmpty(props.warringPlayers) && props.warringPlayers[props.id] &&
                     (
                         Object.values(props.warringPlayers).map(p => {

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import EnemyUnit from './EnemyUnit';
 import Stage from './Stage'
+import ChatBox from './ChatBox'
 import ActionSelect from './ActionSelect'
+import Redirecting from './Redirecting'
 import InitPage from './InitPage'
 const { Howl, Howler } = require('howler');
 
@@ -10,8 +12,12 @@ const _ = require('lodash');
 function Room(props) {
    let socket = props.socket;
    const deal = new Howl({
-      src: ['public/sounds/card_deal.wav'],
-      volume: 0.5,
+      src: ['/sounds/card_deal.wav'],
+      volume: 1,
+   });
+   const war = new Howl({
+      src: ['/sounds/war_sound.wav'],
+      volume: 1,
    });
    const [host, setHost] = useState();
    const [players, setPlayers] = useState();
@@ -24,6 +30,7 @@ function Room(props) {
    const [deactivationMap, setDeactivationMap] = useState({});
    const [ultimateWinner, setUltimateWinner] = useState(false);
    const [clickedOnce, setClickedOnce] = useState(false);
+   const [disconnected, setDisconnected] = useState(false);
 
 
    useEffect(() => {
@@ -72,6 +79,7 @@ function Room(props) {
       })
 
       socket.on('war', data => {
+         setTimeout(() => {
          if (data.deactivationMap) {
             setDeactivationMap(data.deactivationMap)
          }
@@ -79,8 +87,14 @@ function Room(props) {
          setDeckLengths(data.deckLengths);
          setReadyPlayers(data.players);
          setWarringPlayers(data.warPlayers);
-         setWarState(true);
+         setWarState(true)}, 100);
+         war.play();
          
+      })
+
+      socket.on('disconnected', player => {
+         setDisconnected(true);
+         setTimeout(() => props.routerProps.history.push(`/`), 5000);
       })
 
    }, []);
@@ -91,19 +105,20 @@ function Room(props) {
    }
 
    function shoot() {
-      console.log(deal);
       deal.play();
       setClickedOnce(true);
       socket.emit('ready-up', host);
+      
    }
 
    function resolveWar() {
+      deal.play();
       socket.emit('need-resolution', { host, warringPlayers });
    }
 
    return (
       <>
-         <div className='felt-container'>
+         {!disconnected && <div className='felt-container'>
          
          {host && !players && !initFlag &&
             <InitPage host={host} initMyself={initMyself} />
@@ -122,7 +137,7 @@ function Room(props) {
                               <EnemyUnit warringPlayers={warringPlayers} warState={warState} name={player.name} deckLength={deckLengths ? deckLengths[player.id] : null} id={player.id} deactivationMap={deactivationMap} winner={winner}/>
                               
                               <div className='enemystaging'>
-                                    <Stage warState={warState} warringPlayers={warringPlayers} id={player.id} readyPlayers={readyPlayers ? readyPlayers : false} />
+                                    <Stage winner={winner} warState={warState} warringPlayers={warringPlayers} id={player.id} readyPlayers={readyPlayers ? readyPlayers : false} />
                               </div>
                            </div>
                            </div>
@@ -133,8 +148,10 @@ function Room(props) {
                <div className='felt-partition'>
                   {warState && <p className='war-statement'>WAR!</p>}
                </div>
-               {!deactivationMap[socket.id] && <div className='my-side'>
-                  
+               {!deactivationMap[socket.id] &&
+               <div className='side-container'>
+               <ChatBox socket={socket} host={props.routerProps.location.pathname.substring(10)} id={socket.id} /> 
+               <div className='my-side'>
                   <div className='my-staging'>
                      <div>
                            <div className='f'>
@@ -144,7 +161,6 @@ function Room(props) {
                                        return <img className='sword' src='/images/war_sword.png' alt='sword'></img>
                                     })
                                  )}
-                              {winner === socket.id && <img className='crown' src='/images/crown.png' alt='winner'></img>}
                               <span>{players[socket.id].name}</span>
                            </div>
                         {<ActionSelect name={players ? players[socket.id].name : 'No Name Selected'} deckLength={deckLengths ? deckLengths[socket.id] : null} warState={warState} shoot={shoot} resolveWar={resolveWar} winner={winner} warringPlayers={warringPlayers} id={socket.id} acted={readyPlayers && readyPlayers[socket.id] ? readyPlayers[socket.id].changed : null} />}
@@ -158,18 +174,16 @@ function Room(props) {
                                        return <img className='sword' src='/images/war_sword.png' alt='sword'></img>
                                     })
                                  )}
-                              {winner === socket.id && <img className='crown' src='/images/crown.png' alt='winner'></img>}
                               <span>{players[socket.id].name}</span>
                            </div>
-                           <Stage warState={warState} warringPlayers={warringPlayers} id={socket.id} readyPlayers={readyPlayers ? readyPlayers : false} />
+                           <Stage winner={winner} warState={warState} warringPlayers={warringPlayers} id={socket.id} readyPlayers={readyPlayers ? readyPlayers : false} />
                   </div>
                   
                   </div>
                      <p>{deckLengths && `Card Count: ${deckLengths[socket.id]}/52`}</p>
-                  
+               </div>
                </div>}
-
-               {!clickedOnce && <p className='instructions'>(Click the deck to reveal its top card!)</p>}
+               
 
                {deactivationMap[socket.id] && <div className='losing-screen'>
                   <h1>YOU LOSE</h1>
@@ -179,7 +193,11 @@ function Room(props) {
                </div>}
             </div>
          )}
-         </div>
+            {!clickedOnce && <p className='instructions'>(Click your deck to reveal its top card!)</p>}
+         </div>}
+         {disconnected && (
+            <Redirecting />
+         )}
       </>
    );
 }

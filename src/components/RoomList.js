@@ -25,7 +25,6 @@ function RoomList(props) {
     const createRoom = (e) => {
         e.preventDefault();
         setWaiting(true);
-        // let p = new Player(socket.id)
         let roomData = {
             host: socket.id,
             name: roomName,
