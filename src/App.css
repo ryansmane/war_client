@@ -55,18 +55,17 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-image: url('/images/war_game_felt.png');
-  background-position: center; 
-  background-repeat: no-repeat;
-  background-size: cover; 
-  padding: 150px;
-  min-height: 60%;
-  min-width: 60%;
+  
 }
 
 .felt-container {
   display: flex;
   justify-content: center;
+  border: 3px solid black;
+  width: 90%;
+  margin-top: 25px;
+  padding: 100px 0px;
+  padding-bottom: 150px;
 }
 
 .action-select {
@@ -76,6 +75,8 @@
 
 .felt-partition {
   min-height: 10%;
+  text-align: center;
+  position: relative;
 }
 
 .action-partition {
@@ -101,6 +102,30 @@
   font-size: 32px;
 }
 
+.war-statement {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: red;
+  font-size: 32px;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  border-bottom: 4px solid black;
+  text-align: center;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 /* .animation-card {
   animation-duration: 1.2s;
   animation-name: blink;

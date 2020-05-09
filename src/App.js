@@ -13,7 +13,10 @@ function App() {
    
   return (
      <>
-        {/* <Header /> */}
+     <header>
+        <Header />
+     </header>
+     <main>
         <Switch>
            <Route exact path='/' render={(routerProps) => {
               return <RoomList socket={socket} routerProps={routerProps} />
@@ -22,6 +25,7 @@ function App() {
               return <Room socket={socket} routerProps={routerProps} />
            }} />
         </Switch>
+      </main>
      </>
   );
 }

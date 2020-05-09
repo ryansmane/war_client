@@ -3,11 +3,16 @@ import EnemyUnit from './EnemyUnit';
 import Stage from './Stage'
 import ActionSelect from './ActionSelect'
 import InitPage from './InitPage'
+const { Howl, Howler } = require('howler');
 
 const _ = require('lodash');
 
 function Room(props) {
    let socket = props.socket;
+   const deal = new Howl({
+      src: ['public/sounds/card_deal.wav'],
+      volume: 0.5,
+   });
    const [host, setHost] = useState();
    const [players, setPlayers] = useState();
    const [initFlag, setInitFlag] = useState(false);
@@ -86,6 +91,8 @@ function Room(props) {
    }
 
    function shoot() {
+      console.log(deal);
+      deal.play();
       setClickedOnce(true);
       socket.emit('ready-up', host);
    }
@@ -96,6 +103,8 @@ function Room(props) {
 
    return (
       <>
+         <div className='felt-container'>
+         
          {host && !players && !initFlag &&
             <InitPage host={host} initMyself={initMyself} />
          }
@@ -103,7 +112,6 @@ function Room(props) {
             <h1>Waiting for other players to ready up...</h1>
          )}
          {host && players && initFlag && (
-            <div className='felt-container'>
             <div className='felt'>
                <div className='enemy-side'>
                   {Object.values(players).map(player => {
@@ -123,28 +131,42 @@ function Room(props) {
                   })}
                </div>
                <div className='felt-partition'>
-
+                  {warState && <p className='war-statement'>WAR!</p>}
                </div>
                {!deactivationMap[socket.id] && <div className='my-side'>
-                  <p>{deckLengths && `Card Count: ${deckLengths[socket.id]}/52`}</p>
+                  
                   <div className='my-staging'>
                      <div>
+                           <div className='f'>
+                              {warState && !_.isEmpty(warringPlayers) && warringPlayers[socket.id] &&
+                                 (
+                                    Object.values(warringPlayers).map(p => {
+                                       return <img className='sword' src='/images/war_sword.png' alt='sword'></img>
+                                    })
+                                 )}
+                              {winner === socket.id && <img className='crown' src='/images/crown.png' alt='winner'></img>}
+                              <span>{players[socket.id].name}</span>
+                           </div>
                         {<ActionSelect name={players ? players[socket.id].name : 'No Name Selected'} deckLength={deckLengths ? deckLengths[socket.id] : null} warState={warState} shoot={shoot} resolveWar={resolveWar} winner={winner} warringPlayers={warringPlayers} id={socket.id} acted={readyPlayers && readyPlayers[socket.id] ? readyPlayers[socket.id].changed : null} />}
                      </div>
                      <div className='action-partition'></div>
                      <div>
+                           <div style={{visibility: 'hidden'}} className='f'>
+                              {warState && !_.isEmpty(warringPlayers) && warringPlayers[socket.id] &&
+                                 (
+                                    Object.values(warringPlayers).map(p => {
+                                       return <img className='sword' src='/images/war_sword.png' alt='sword'></img>
+                                    })
+                                 )}
+                              {winner === socket.id && <img className='crown' src='/images/crown.png' alt='winner'></img>}
+                              <span>{players[socket.id].name}</span>
+                           </div>
                            <Stage warState={warState} warringPlayers={warringPlayers} id={socket.id} readyPlayers={readyPlayers ? readyPlayers : false} />
                   </div>
                   
                   </div>
-                     <p>{players[socket.id].name}</p>
-                     {warState && !_.isEmpty(warringPlayers) && warringPlayers[socket.id] &&
-                        (
-                           Object.values(warringPlayers).map(p => {
-                              return <img className='sword' src='/images/war_sword.png' alt='sword'></img>
-                           })
-                        )}
-                     {winner === socket.id && <img className='crown' src='/images/crown.png' alt='winner'></img>}
+                     <p>{deckLengths && `Card Count: ${deckLengths[socket.id]}/52`}</p>
+                  
                </div>}
 
                {!clickedOnce && <p className='instructions'>(Click the deck to reveal its top card!)</p>}
@@ -156,8 +178,8 @@ function Room(props) {
                   <h1>YOU WIN</h1>
                </div>}
             </div>
-            </div>
          )}
+         </div>
       </>
    );
 }
