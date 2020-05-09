@@ -18,6 +18,8 @@ function Room(props) {
    const [winner, setWinner] = useState(false);
    const [deactivationMap, setDeactivationMap] = useState({});
    const [ultimateWinner, setUltimateWinner] = useState(false);
+   const [clickedOnce, setClickedOnce] = useState(false);
+
 
    useEffect(() => {
       setHost(props.routerProps.location.pathname.substring(10));
@@ -84,6 +86,7 @@ function Room(props) {
    }
 
    function shoot() {
+      setClickedOnce(true);
       socket.emit('ready-up', host);
    }
 
@@ -100,38 +103,51 @@ function Room(props) {
             <h1>Waiting for other players to ready up...</h1>
          )}
          {host && players && initFlag && (
-            <>
+            <div className='felt-container'>
+            <div className='felt'>
                <div className='enemy-side'>
-                  {players.map((player) => {
+                  {Object.values(players).map(player => {
                      if (player.id !== socket.id) {
                         return (
-                           <>
-                           <EnemyUnit id={player.id} deactivationMap={deactivationMap} winner={winner}/>
+                           <div className='enemy-unit-container'>
+                           <div className='enemy-slot'>
+                              <EnemyUnit warringPlayers={warringPlayers} warState={warState} name={player.name} deckLength={deckLengths ? deckLengths[player.id] : null} id={player.id} deactivationMap={deactivationMap} winner={winner}/>
                               
                               <div className='enemystaging'>
-                                 <p>
-                                    {deckLengths &&
-                                       `${deckLengths[player.id]}/ 52`}
-                                 </p>
-                                 {readyPlayers && readyPlayers[player.id] &&
-                                    <Stage warState={warState} warringPlayers={warringPlayers} pip={readyPlayers[player.id].card.pip} suit={readyPlayers[player.id].card.suit} id={player.id} />
-                                 }
+                                    <Stage warState={warState} warringPlayers={warringPlayers} id={player.id} readyPlayers={readyPlayers ? readyPlayers : false} />
                               </div>
-                           </>
+                           </div>
+                           </div>
                         );
                      }
                   })}
                </div>
+               <div className='felt-partition'>
+
+               </div>
                {!deactivationMap[socket.id] && <div className='my-side'>
-                  <div className='mystaging'>
-                     {readyPlayers && readyPlayers[socket.id] && (
-                        <Stage warState={warState} warringPlayers={warringPlayers} pip={readyPlayers[socket.id].card.pip} suit={readyPlayers[socket.id].card.suit} id={socket.id} />
-                     )}
+                  <p>{deckLengths && `Card Count: ${deckLengths[socket.id]}/52`}</p>
+                  <div className='my-staging'>
+                     <div>
+                        {<ActionSelect name={players ? players[socket.id].name : 'No Name Selected'} deckLength={deckLengths ? deckLengths[socket.id] : null} warState={warState} shoot={shoot} resolveWar={resolveWar} winner={winner} warringPlayers={warringPlayers} id={socket.id} acted={readyPlayers && readyPlayers[socket.id] ? readyPlayers[socket.id].changed : null} />}
+                     </div>
+                     <div className='action-partition'></div>
+                     <div>
+                           <Stage warState={warState} warringPlayers={warringPlayers} id={socket.id} readyPlayers={readyPlayers ? readyPlayers : false} />
                   </div>
-                  <p>{deckLengths && `${deckLengths[socket.id]} / 52`}</p>
-                  <h2>{socket.id}</h2>
-                  <ActionSelect warState={warState} shoot={shoot} resolveWar={resolveWar} winner={winner} warringPlayers={warringPlayers} id={socket.id} acted={readyPlayers && readyPlayers[socket.id] ? readyPlayers[socket.id].changed : null} />
+                  
+                  </div>
+                     <p>{players[socket.id].name}</p>
+                     {warState && !_.isEmpty(warringPlayers) && warringPlayers[socket.id] &&
+                        (
+                           Object.values(warringPlayers).map(p => {
+                              return <img className='sword' src='/images/war_sword.png' alt='sword'></img>
+                           })
+                        )}
+                     {winner === socket.id && <img className='crown' src='/images/crown.png' alt='winner'></img>}
                </div>}
+
+               {!clickedOnce && <p className='instructions'>(Click the deck to reveal its top card!)</p>}
 
                {deactivationMap[socket.id] && <div className='losing-screen'>
                   <h1>YOU LOSE</h1>
@@ -139,7 +155,8 @@ function Room(props) {
                {ultimateWinner === socket.id && <div className='winning-screen'>
                   <h1>YOU WIN</h1>
                </div>}
-            </>
+            </div>
+            </div>
          )}
       </>
    );

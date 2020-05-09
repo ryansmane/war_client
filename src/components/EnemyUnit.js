@@ -1,21 +1,38 @@
 import React from 'react';
+const _ = require('lodash');
 
 function EnemyUnit(props) {
     console.log(props.winner, props.id);
     return (
         <div className='enemy-unit'>
-            <p>{props.id}</p>
+            {props.warState && !_.isEmpty(props.warringPlayers) && props.warringPlayers[props.id] && <div className='enemy-info-at-war'>
+                {props.winner === props.id && <img className='crown' src='/images/crown.png' alt='winner'></img>}
+                {props.warState && !_.isEmpty(props.warringPlayers) && props.warringPlayers[props.id] &&
+                (
+                    Object.values(props.warringPlayers).map(p => {
+                        return <img className='sword' src='/images/war_sword.png' alt='sword'></img>
+                    })
+                )}
+                <span>{props.name}</span>
+            </div>}
+            {!props.warState && !props.warringPlayers[props.id] && <div>
+                {props.winner === props.id && <img className='crown' src='/images/crown.png' alt='winner'></img>}
+                {props.warState && !_.isEmpty(props.warringPlayers) && props.warringPlayers[props.id] &&
+                    (
+                        Object.values(props.warringPlayers).map(p => {
+                            return <img className='sword' src='/images/war_sword.png' alt='sword'></img>
+                        })
+                    )}
+                <span>{props.name}</span>
+            </div>}
             {!props.deactivationMap[props.id] && <img
-                style={props.winner === props.id
-                    ? { border: '5px solid green' }
-                    : { border: 'none' }}
-                className='enemy-backs'
+                className='card'
                 src='/images/card_back_war.png'
                 alt='enemy back'
             ></img>}
             {props.deactivationMap[props.id] && <img
                 style={{opacity: '.5'}}
-                className='enemy-backs'
+                className='card'
                 src='/images/lost_card_back_war.png'
                 alt='enemy back'
             ></img>}

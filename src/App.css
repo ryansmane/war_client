@@ -1,69 +1,29 @@
 .enemy-side {
   display: flex;
   justify-content: center;
+
 } 
+
+.enemy-unit-container {
+  margin: 0px 16px;
+}
 
 .my-side {
   display: flex;
   justify-content: center;
-}
-
-/*.enemy-card-back {
-  height: 40%;
-  width: 40%;
-}
-
-.my-card-back {
-  height: 80%;
-  width: 80%;
-} */
-
-/* my card container */
-/* .my-flex {
-  display: flex;
-  flex-direction: column;
-}
-.flex-light {
-  align-items: flex-end;
-}
-.flex-back {
-  text-align: center;
-  padding:0;
-  margin:0;
-}
-.flex-name {
-  display: flex;
-  justify-content: space-between;
-  margin: 0;
-  padding: 0;
-}
-
-h4 {
-  padding: 0px;
-  margin: 0;
-}
-
-.light {
-  height: 75%;
-  width: 60%;
-}
-.h {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-
-
-.staging-card {
-  height: 80px;
-  width: 60px;
-}
-
-.battleground {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-} */ 
+  flex-direction: column;
+}
+
+.enemy-slot {
+  display: flex;
+  flex-direction: column;
+}
+
+.my-staging {
+  display: flex;
+  flex-direction: row;
+}
 
 .enemy-backs {
   width: 80px;
@@ -76,8 +36,9 @@ h4 {
 }
 
 .card {
-  width: 70px;
-  height: 50px;
+  width: 116px;
+  height: 140px;
+  margin: 4px 0px;
 }
 
 .enemy-cards {
@@ -89,3 +50,69 @@ h4 {
   display: flex;
   justify-content: center;
 }
+
+.felt {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-image: url('/images/war_game_felt.png');
+  background-position: center; 
+  background-repeat: no-repeat;
+  background-size: cover; 
+  padding: 150px;
+  min-height: 60%;
+  min-width: 60%;
+}
+
+.felt-container {
+  display: flex;
+  justify-content: center;
+}
+
+.action-select {
+  display: flex;
+  flex-direction: column;
+}
+
+.felt-partition {
+  min-height: 10%;
+}
+
+.action-partition {
+  min-width: 6%;
+}
+
+.crown  {
+  height: 20px;
+  width: 20px;
+}
+
+.sword  {
+  height: 20px;
+  width: 20px;
+}
+
+.enemy-info-at-war {
+  padding-bottom: 8%;
+}
+
+.instructions {
+  text-align: center;
+  font-size: 32px;
+}
+
+/* .animation-card {
+  animation-duration: 1.2s;
+  animation-name: blink;
+  animation-iteration-count: infinite;
+}
+
+@keyframes blink {
+  from {
+    opacity:0;
+  }
+
+  to {
+    opacity:1;
+  }
+} */

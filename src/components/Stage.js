@@ -3,20 +3,20 @@ const { getPath } = require('../util/pathingService');
 const _ = require('lodash');
 
 function Stage(props) {
-   console.log(props.warringPlayers, props.warState, props.id)
+   
    return (
       <>
-         <img
+         {props.readyPlayers && props.readyPlayers[props.id] && (<img
             className='card'
-            style={props.warState &&
-               !_.isEmpty(props.warringPlayers) &&
-               props.warringPlayers[props.id]
-                  ? { border: '5px solid red' }
-                  : { border: 'none' }
-            }
-            src={getPath(props.pip, props.suit)}
-            alt={`${props.pip}${props.suit}`}
-         ></img>
+            src={getPath(props.readyPlayers[props.id].card.pip, props.readyPlayers[props.id].card.suit)}
+            alt={`${props.readyPlayers[props.id].card.pip}${props.readyPlayers[props.id].card.suit}`}
+         ></img>)}
+         {props.readyPlayers && !props.readyPlayers[props.id] && (
+            <img className='card' src='/images/empty_card.png' alt='slot'></img>
+         )}
+         {!props.readyPlayers && (
+            <img className='card' src='/images/empty_card.png' alt='slot'></img>
+         )}
       </>
    );
 }

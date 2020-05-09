@@ -9,6 +9,7 @@ function RoomList(props) {
     const [roomName, setRoomName] = useState();
     const [roomCap, setRoomCap] = useState();
     const [waiting, setWaiting] = useState(false);
+    const [desiredName, setDesiredName] = useState('');
 
     useEffect(() => {
         socket.on('return-rooms', (rooms) => {
@@ -29,7 +30,8 @@ function RoomList(props) {
             host: socket.id,
             name: roomName,
             assigned: false,
-            capacity: roomCap
+            capacity: roomCap,
+            desiredName: desiredName
         };
         socket.emit('create-room', roomData);
         
@@ -38,8 +40,7 @@ function RoomList(props) {
     const joinRoom = (host, name, e) => {
         setWaiting(true)
         e.preventDefault();
-        // let player = new Player(socket.id);
-        socket.emit('join-room', {host, name})
+        socket.emit('join-room', {host, name, desiredName})
         
     }
 
@@ -52,15 +53,15 @@ function RoomList(props) {
                 {roomList && roomList.map(room => {
                     if (room.capacity > Object.keys(room.players).length) {
                         return (
-                        <li>Name:{room.name} | Members: {Object.keys(room.players).length} / {room.capacity} <button onClick={(e) => joinRoom(room.host, room.name, e)}>Join Room</button></li> 
+                        <li>Name:{room.name} | Members: {Object.keys(room.players).length} / {room.capacity} <button onClick={(e) => joinRoom(room.host, room.name, e)}>Join Room</button> as <input onChange={e=>setDesiredName(e.target.value)}/></li> 
                         )
                     }
                 })}
             </ul>   
             <form className='ifield'>
-                <input placeholder='name' type='text' onChange={(e) => setRoomName(e.target.value)}/>
+                <input placeholder='room name' type='text' onChange={(e) => setRoomName(e.target.value)}/>
                 <input placeholder='capacity' type='text' onChange={(e) => setRoomCap(parseInt(e.target.value))} />
-
+                <input placeholder='player name' type='text' onChange={e => setDesiredName(e.target.value)} />
                 <button type='button' onClick = {(e) => createRoom(e)}>Create Room</button> 
             </form>
             </>)}
