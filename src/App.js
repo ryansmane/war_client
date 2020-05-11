@@ -4,6 +4,7 @@ import RoomList from './components/RoomList'
 import Room from './components/Room';
 import { Route, Switch } from 'react-router-dom';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import openSocket from 'socket.io-client'
 
 const socket = openSocket('http://localhost:3001');

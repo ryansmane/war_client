@@ -5,6 +5,7 @@ import ChatBox from './ChatBox'
 import ActionSelect from './ActionSelect'
 import Redirecting from './Redirecting'
 import InitPage from './InitPage'
+import WinnerPage from './WinnerPage'
 const { Howl, Howler } = require('howler');
 
 const _ = require('lodash');
@@ -118,86 +119,235 @@ function Room(props) {
 
    return (
       <>
-         {!disconnected && <div className='felt-container'>
-         
-         {host && !players && !initFlag &&
-            <InitPage host={host} initMyself={initMyself} />
-         }
-         {host && !players && initFlag && (
-            <h1>Waiting for other players to ready up...</h1>
-         )}
-         {host && players && initFlag && (
-            <div className='felt'>
-               <div className='enemy-side'>
-                  {Object.values(players).map(player => {
-                     if (player.id !== socket.id) {
-                        return (
-                           <div className='enemy-unit-container'>
-                           <div className='enemy-slot'>
-                              <EnemyUnit warringPlayers={warringPlayers} warState={warState} name={player.name} deckLength={deckLengths ? deckLengths[player.id] : null} id={player.id} deactivationMap={deactivationMap} winner={winner}/>
-                              
-                              <div className='enemystaging'>
-                                    <Stage winner={winner} warState={warState} warringPlayers={warringPlayers} id={player.id} readyPlayers={readyPlayers ? readyPlayers : false} />
-                              </div>
-                           </div>
-                           </div>
-                        );
-                     }
-                  })}
-               </div>
-               <div className='felt-partition'>
-                  {warState && <p className='war-statement'>WAR!</p>}
-               </div>
-               {!deactivationMap[socket.id] &&
-               <div className='side-container'>
-               <ChatBox socket={socket} host={props.routerProps.location.pathname.substring(10)} id={socket.id} /> 
-               <div className='my-side'>
-                  <div className='my-staging'>
-                     <div>
-                           <div className='f'>
-                              {warState && !_.isEmpty(warringPlayers) && warringPlayers[socket.id] &&
-                                 (
-                                    Object.values(warringPlayers).map(p => {
-                                       return <img className='sword' src='/images/war_sword.png' alt='sword'></img>
-                                    })
-                                 )}
-                              <span>{players[socket.id].name}</span>
-                           </div>
-                        {<ActionSelect name={players ? players[socket.id].name : 'No Name Selected'} deckLength={deckLengths ? deckLengths[socket.id] : null} warState={warState} shoot={shoot} resolveWar={resolveWar} winner={winner} warringPlayers={warringPlayers} id={socket.id} acted={readyPlayers && readyPlayers[socket.id] ? readyPlayers[socket.id].changed : null} />}
-                     </div>
-                     <div className='action-partition'></div>
-                     <div>
-                           <div style={{visibility: 'hidden'}} className='f'>
-                              {warState && !_.isEmpty(warringPlayers) && warringPlayers[socket.id] &&
-                                 (
-                                    Object.values(warringPlayers).map(p => {
-                                       return <img className='sword' src='/images/war_sword.png' alt='sword'></img>
-                                    })
-                                 )}
-                              <span>{players[socket.id].name}</span>
-                           </div>
-                           <Stage winner={winner} warState={warState} warringPlayers={warringPlayers} id={socket.id} readyPlayers={readyPlayers ? readyPlayers : false} />
-                  </div>
-                  
-                  </div>
-                     <p>{deckLengths && `Card Count: ${deckLengths[socket.id]}/52`}</p>
-               </div>
-               </div>}
-               
+         {!disconnected && (
+            <div className='felt-container'>
+               {host && !players && !initFlag && (
+                  <InitPage host={host} initMyself={initMyself} />
+               )}
+               {host && !players && initFlag && (
+                  <h1>Waiting for other players to ready up...</h1>
+               )}
+               {host && players && initFlag && !ultimateWinner && (
+                  <div className='felt'>
+                     <div className='enemy-side'>
+                        {Object.values(players).map((player) => {
+                           if (player.id !== socket.id) {
+                              return (
+                                 <div className='enemy-unit-container'>
+                                    <div className='enemy-slot'>
+                                       <EnemyUnit
+                                          warringPlayers={warringPlayers}
+                                          warState={warState}
+                                          name={player.name}
+                                          deckLength={
+                                             deckLengths
+                                                ? deckLengths[player.id]
+                                                : null
+                                          }
+                                          id={player.id}
+                                          deactivationMap={deactivationMap}
+                                          winner={winner}
+                                       />
 
-               {deactivationMap[socket.id] && <div className='losing-screen'>
-                  <h1>YOU LOSE</h1>
-               </div>}
-               {ultimateWinner === socket.id && <div className='winning-screen'>
-                  <h1>YOU WIN</h1>
-               </div>}
+                                       <div className='enemystaging'>
+                                          <Stage
+                                             lost={deactivationMap && deactivationMap[player.id] ? true : false}
+                                             winner={winner}
+                                             warState={warState}
+                                             warringPlayers={warringPlayers}
+                                             id={player.id}
+                                             readyPlayers={
+                                                readyPlayers
+                                                   ? readyPlayers
+                                                   : false
+                                             }
+                                          />
+                                       </div>
+                                    </div>
+                                 </div>
+                              );
+                           }
+                        })}
+                     </div>
+                     <div className='felt-partition'>
+                        {warState && <p className='war-statement'>WAR!</p>}
+                     </div>
+                     {!deactivationMap[socket.id] && (
+                        <div className='side-container'>
+                           <ChatBox
+                              socket={socket}
+                              host={props.routerProps.location.pathname.substring(
+                                 10
+                              )}
+                              id={socket.id}
+                           />
+                           <div className='my-side'>
+                              <div className='my-staging'>
+                                 <div>
+                                    <div className='f'>
+                                       {warState &&
+                                          !_.isEmpty(warringPlayers) &&
+                                          warringPlayers[socket.id] &&
+                                          Object.values(warringPlayers).map(
+                                             (p) => {
+                                                return (
+                                                   <img
+                                                      className='sword'
+                                                      src='/images/war_sword.png'
+                                                      alt='sword'
+                                                   ></img>
+                                                );
+                                             }
+                                          )}
+                                       <span>
+                                          <em>S. {players[socket.id].name}</em>
+                                       </span>
+                                    </div>
+                                    {
+                                       <ActionSelect
+                                          lost={false}
+                                          name={
+                                             players
+                                                ? players[socket.id].name
+                                                : 'No Name Selected'
+                                          }
+                                          deckLength={
+                                             deckLengths
+                                                ? deckLengths[socket.id]
+                                                : null
+                                          }
+                                          warState={warState}
+                                          shoot={shoot}
+                                          resolveWar={resolveWar}
+                                          winner={winner}
+                                          warringPlayers={warringPlayers}
+                                          id={socket.id}
+                                          acted={
+                                             readyPlayers &&
+                                             readyPlayers[socket.id]
+                                                ? readyPlayers[socket.id]
+                                                     .changed
+                                                : null
+                                          }
+                                       />
+                                    }
+                                 </div>
+                                 <div className='action-partition'></div>
+                                 <div>
+                                    <div
+                                       style={{ visibility: 'hidden' }}
+                                       className='f'
+                                    >
+                                       {warState &&
+                                          !_.isEmpty(warringPlayers) &&
+                                          warringPlayers[socket.id] &&
+                                          Object.values(warringPlayers).map(
+                                             (p) => {
+                                                return (
+                                                   <img
+                                                      className='sword'
+                                                      src='/images/war_sword.png'
+                                                      alt='sword'
+                                                   ></img>
+                                                );
+                                             }
+                                          )}
+                                       <span>{players[socket.id].name}</span>
+                                    </div>
+                                    <Stage
+                                       lost={false}
+                                       winner={winner}
+                                       warState={warState}
+                                       warringPlayers={warringPlayers}
+                                       id={socket.id}
+                                       readyPlayers={
+                                          readyPlayers ? readyPlayers : false
+                                       }
+                                    />
+                                 </div>
+                              </div>
+                              <p>
+                                 {deckLengths &&
+                                    `Card Count: ${deckLengths[socket.id]}/52`}
+                              </p>
+                           </div>
+                        </div>
+                     )}
+                     {deactivationMap[socket.id] && (
+                        <div className='side-container'>
+                           <ChatBox
+                              socket={socket}
+                              host={props.routerProps.location.pathname.substring(
+                                 10
+                              )}
+                              id={socket.id}
+                           />
+                           <div className='my-side'>
+                              <div className='my-staging'>
+                                 <div>
+                                    <div className='f'>
+                                       <span>
+                                          <em>S. {players[socket.id].name}</em>
+                                       </span>
+                                    </div>
+                                    <ActionSelect
+                                       lost={true}
+                                       name={
+                                          players
+                                             ? players[socket.id].name
+                                             : 'No Name Selected'
+                                       }
+                                       deckLength={
+                                          deckLengths
+                                             ? deckLengths[socket.id]
+                                             : null
+                                       }
+                                       warState={warState}
+                                       shoot={shoot}
+                                       resolveWar={resolveWar}
+                                       winner={winner}
+                                       warringPlayers={warringPlayers}
+                                       id={socket.id}
+                                       acted={
+                                          readyPlayers &&
+                                          readyPlayers[socket.id]
+                                             ? readyPlayers[socket.id].changed
+                                             : null
+                                       }
+                                    />
+                                    }
+                                 </div>
+                                 <div className='action-partition'></div>
+                                 <div>
+                                    <Stage
+                                       lost={true}
+                                       winner={winner}
+                                       warState={warState}
+                                       warringPlayers={warringPlayers}
+                                       id={socket.id}
+                                       readyPlayers={
+                                          readyPlayers ? readyPlayers : false
+                                       }
+                                    />
+                                 </div>
+                              </div>
+                              <p>{deckLengths && `Card Count: 0/52`}</p>
+                           </div>
+                        </div>
+                     )}
+
+                     {ultimateWinner === socket.id && (
+                        <div className='winning-screen'>
+                           <h1>YOU WIN</h1>
+                        </div>
+                     )}
+                  </div>
+               )}
+               {initFlag && <p className='instructions'>Have fun!</p>}
             </div>
          )}
-            {!clickedOnce && <p className='instructions'>(Click your deck to reveal its top card!)</p>}
-         </div>}
-         {disconnected && (
-            <Redirecting />
-         )}
+         {disconnected && <Redirecting />}
+         {ultimateWinner && <WinnerPage />}
       </>
    );
 }

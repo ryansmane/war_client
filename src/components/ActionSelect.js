@@ -5,8 +5,8 @@ function ActionSelect(props) {
 
 
    return (
-      
-      <div className='action-select'>
+      <>
+      {!props.lost && <div className='action-select'>
          {!props.warState && !props.acted && (
             <img
                className='card animation-card'
@@ -48,7 +48,15 @@ function ActionSelect(props) {
             )}
          <div>
          </div>
-      </div>
+      </div>}
+      {props.lost &&  
+            <img
+               className='card'
+               src='/images/lost_card_back_war.png'
+               alt='alt'
+            ></img>
+      }
+      </>
    );
 }
 

@@ -29,7 +29,7 @@ function ChatBox(props) {
         <div>
         {messages && messages.map(m => {
             return (
-            <p>{m.sender}: {m.message}</p>
+            <p>Shark {m.sender}: {m.message}</p>
             )
         })}
         </div>
