@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Player } from '../classes/Player';
 import Form from 'react-bootstrap/Form';
 const _ = require('lodash');
 const {lowercase, uppercase} = require('../util/letters')
