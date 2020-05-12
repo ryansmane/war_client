@@ -5,7 +5,7 @@ function Header() {
       <div className='header-box'>
          <img
             className='logo'
-            src='../images/logo.png'
+            src='./images/logo.png'
             alt='a cute shark holding cards'
          ></img>
          <div className='title-box'>
