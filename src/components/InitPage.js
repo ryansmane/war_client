@@ -5,7 +5,7 @@ function InitPage(props) {
       <>
          <h1>Click your deck to ready up!</h1>
          <img
-            src='/images/card_back_war.png'
+            src='./images/card_back_war.png'
             alt='click here to ready up'
             onClick={() => props.initMyself()}
          ></img>
