@@ -31,8 +31,8 @@ function Arena(props) {
 
       let fileName =
          pip < 11
-            ? '/images/card_sprites/' + pip.toString() + suit + '.png'
-            : '/images/card_sprites/' + map[pip] + suit + '.png';
+            ? './images/card_sprites/' + pip.toString() + suit + '.png'
+            : './images/card_sprites/' + map[pip] + suit + '.png';
       return fileName;
    }
 
@@ -45,7 +45,8 @@ function Arena(props) {
                   {enemies.map((e) => {
                      return (
                         <div className='single-enemy'>
-                           <img className='card'
+                           <img
+                              className='card'
                               src={getPath(e.top.pip, e.top.suit)}
                               alt={`${e.top.pip} ${e.top.suit}`}
                            ></img>
@@ -54,7 +55,8 @@ function Arena(props) {
                   })}
                </div>
                <div className='my-card'>
-                  <img className='card'
+                  <img
+                     className='card'
                      src={getPath(me.top.pip, me.top.suit)}
                      alt={`${me.top.pip} ${me.top.suit}`}
                   ></img>

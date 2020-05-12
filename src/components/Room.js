@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import EnemyUnit from './EnemyUnit';
-import Stage from './Stage'
-import ChatBox from './ChatBox'
-import ActionSelect from './ActionSelect'
-import Redirecting from './Redirecting'
-import InitPage from './InitPage'
-import WinnerPage from './WinnerPage'
+import Stage from './Stage';
+import ChatBox from './ChatBox';
+import ActionSelect from './ActionSelect';
+import Redirecting from './Redirecting';
+import InitPage from './InitPage';
+import WinnerPage from './WinnerPage';
 const { Howl, Howler } = require('howler');
 
 const _ = require('lodash');
@@ -33,7 +33,6 @@ function Room(props) {
    const [clickedOnce, setClickedOnce] = useState(false);
    const [disconnected, setDisconnected] = useState(false);
 
-
    useEffect(() => {
       setHost(props.routerProps.location.pathname.substring(10));
 
@@ -47,57 +46,58 @@ function Room(props) {
          setDeckLengths(data.deckLengths);
          if (Object.values(data.players).length === data.roomCap && !data.war) {
             setTimeout(() => {
-               socket.emit('refresh-cards', props.routerProps.location.pathname.substring(10));
-               }, 1500);
+               socket.emit(
+                  'refresh-cards',
+                  props.routerProps.location.pathname.substring(10)
+               );
+            }, 1500);
          }
       });
 
-      socket.on('resolved', data => {
+      socket.on('resolved', (data) => {
          if (data.deactivationMap) {
             setDeactivationMap(data.deactivationMap);
          }
 
          if (data.ultimateWinner) {
-            setUltimateWinner(data.winner)
+            setUltimateWinner(data.winner);
          }
 
          if (data.warHistory) {
-         setWarState(false);
-         setReadyPlayers(data.warHistory);
-         setWarringPlayers({});
-         setTimeout(() => {
-         setWinner(data.winner);
-         setDeckLengths(data.deckLengths);
-         setReadyPlayers(data.players);
-         
-         }, 1500);
+            setWarState(false);
+            setReadyPlayers(data.warHistory);
+            setWarringPlayers({});
+            setTimeout(() => {
+               setWinner(data.winner);
+               setDeckLengths(data.deckLengths);
+               setReadyPlayers(data.players);
+            }, 1500);
          } else {
             setWarState(false);
             setReadyPlayers(data.players);
-            setWinner(data.winner)
+            setWinner(data.winner);
             setDeckLengths(data.deckLengths);
          }
-      })
+      });
 
-      socket.on('war', data => {
+      socket.on('war', (data) => {
          setTimeout(() => {
-         if (data.deactivationMap) {
-            setDeactivationMap(data.deactivationMap)
-         }
-         setWinner(false);
-         setDeckLengths(data.deckLengths);
-         setReadyPlayers(data.players);
-         setWarringPlayers(data.warPlayers);
-         setWarState(true)}, 100);
+            if (data.deactivationMap) {
+               setDeactivationMap(data.deactivationMap);
+            }
+            setWinner(false);
+            setDeckLengths(data.deckLengths);
+            setReadyPlayers(data.players);
+            setWarringPlayers(data.warPlayers);
+            setWarState(true);
+         }, 100);
          war.play();
-         
-      })
+      });
 
-      socket.on('disconnected', player => {
+      socket.on('disconnected', (player) => {
          setDisconnected(true);
          setTimeout(() => props.routerProps.history.push(`/`), 5000);
-      })
-
+      });
    }, []);
 
    function initMyself() {
@@ -109,7 +109,6 @@ function Room(props) {
       deal.play();
       setClickedOnce(true);
       socket.emit('ready-up', host);
-      
    }
 
    function resolveWar() {
@@ -151,7 +150,12 @@ function Room(props) {
 
                                        <div className='enemystaging'>
                                           <Stage
-                                             lost={deactivationMap && deactivationMap[player.id] ? true : false}
+                                             lost={
+                                                deactivationMap &&
+                                                deactivationMap[player.id]
+                                                   ? true
+                                                   : false
+                                             }
                                              winner={winner}
                                              warState={warState}
                                              warringPlayers={warringPlayers}
@@ -193,7 +197,7 @@ function Room(props) {
                                                 return (
                                                    <img
                                                       className='sword'
-                                                      src='/images/war_sword.png'
+                                                      src='./images/war_sword.png'
                                                       alt='sword'
                                                    ></img>
                                                 );
@@ -246,7 +250,7 @@ function Room(props) {
                                                 return (
                                                    <img
                                                       className='sword'
-                                                      src='/images/war_sword.png'
+                                                      src='./images/war_sword.png'
                                                       alt='sword'
                                                    ></img>
                                                 );
