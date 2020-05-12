@@ -197,7 +197,7 @@ function Room(props) {
                                                 return (
                                                    <img
                                                       className='sword'
-                                                      src='./images/war_sword.png'
+                                                      src='../images/war_sword.png'
                                                       alt='sword'
                                                    ></img>
                                                 );
@@ -250,7 +250,7 @@ function Room(props) {
                                                 return (
                                                    <img
                                                       className='sword'
-                                                      src='./images/war_sword.png'
+                                                      src='../images/war_sword.png'
                                                       alt='sword'
                                                    ></img>
                                                 );

@@ -31,8 +31,8 @@ function Arena(props) {
 
       let fileName =
          pip < 11
-            ? './images/card_sprites/' + pip.toString() + suit + '.png'
-            : './images/card_sprites/' + map[pip] + suit + '.png';
+            ? '../images/card_sprites/' + pip.toString() + suit + '.png'
+            : '../images/card_sprites/' + map[pip] + suit + '.png';
       return fileName;
    }
 

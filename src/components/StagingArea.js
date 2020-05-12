@@ -9,7 +9,7 @@ function StagingArea(props) {
          {props.bool && (
             <img
                className='staging-backs'
-               src='./images/cardbackwar.png'
+               src='../images/cardbackwar.png'
                alt='staging area'
             ></img>
          )}

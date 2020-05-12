@@ -9,7 +9,7 @@ function ActionSelect(props) {
                {!props.warState && !props.acted && (
                   <img
                      className='card animation-card'
-                     src='./images/cardbackwar.png'
+                     src='../images/cardbackwar.png'
                      alt='alt'
                      onClick={() => props.shoot()}
                   ></img>
@@ -17,7 +17,7 @@ function ActionSelect(props) {
                {!props.warState && props.acted && (
                   <img
                      className='card'
-                     src='./images/cardbackwar.png'
+                     src='../images/cardbackwar.png'
                      alt='alt'
                   ></img>
                )}
@@ -27,7 +27,7 @@ function ActionSelect(props) {
                   !props.acted && (
                      <img
                         className='card'
-                        src='./images/cardbackwar.png'
+                        src='../images/cardbackwar.png'
                         alt='alt'
                         onClick={() => props.resolveWar()}
                      ></img>
@@ -38,7 +38,7 @@ function ActionSelect(props) {
                   props.acted && (
                      <img
                         className='card'
-                        src='./images/cardbackwar.png'
+                        src='../images/cardbackwar.png'
                         alt='alt'
                      ></img>
                   )}
@@ -47,7 +47,7 @@ function ActionSelect(props) {
                   !props.warringPlayers[props.id] && (
                      <img
                         className='card'
-                        src='./images/cardbackwar.png'
+                        src='../images/cardbackwar.png'
                         alt='alt'
                      ></img>
                   )}
@@ -57,7 +57,7 @@ function ActionSelect(props) {
          {props.lost && (
             <img
                className='card'
-               src='./images/lost_cardbackwar.png'
+               src='../images/lost_cardbackwar.png'
                alt='alt'
             ></img>
          )}
