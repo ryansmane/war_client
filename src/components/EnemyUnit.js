@@ -68,7 +68,7 @@ function EnemyUnit(props) {
          {!props.deactivationMap[props.id] && (
             <img
                className='card'
-               src='./images/card_back_war.png'
+               src='./images/cardbackwar.png'
                alt='enemy back'
             ></img>
          )}
@@ -76,7 +76,7 @@ function EnemyUnit(props) {
             <img
                style={{ opacity: '.5' }}
                className='card'
-               src='./images/lost_card_back_war.png'
+               src='./images/lost_cardbackwar.png'
                alt='enemy back'
             ></img>
          )}
