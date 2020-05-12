@@ -24,14 +24,14 @@ function Stage(props) {
                   props.winner !== props.id && (
                      <img
                         className='card'
-                        src='./images/empty_card.png'
+                        src='/images/empty_card.png'
                         alt='slot'
                      ></img>
                   )}
                {!props.readyPlayers && (
                   <img
                      className='card'
-                     src='./images/empty_card.png'
+                     src='/images/empty_card.png'
                      alt='slot'
                   ></img>
                )}
@@ -40,7 +40,7 @@ function Stage(props) {
                   props.winner === props.id && (
                      <img
                         className='card'
-                        src='./images/winner_card.png'
+                        src='/images/winner_card.png'
                         alt='slot'
                      ></img>
                   )}
@@ -50,7 +50,7 @@ function Stage(props) {
             <>
                <img
                   className='card'
-                  src='./images/cross_out.png'
+                  src='/images/cross_out.png'
                   alt='loser'
                ></img>
             </>

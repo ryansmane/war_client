@@ -11,7 +11,7 @@ function EnemyUnit(props) {
                   {props.winner === props.id && (
                      <img
                         className='crown'
-                        src='./images/crown.png'
+                        src='/images/crown.png'
                         alt='winner'
                      ></img>
                   )}
@@ -24,7 +24,7 @@ function EnemyUnit(props) {
                            return (
                               <img
                                  className='sword'
-                                 src='./images/war_sword.png'
+                                 src='/images/war_sword.png'
                                  alt='sword'
                               ></img>
                            );
@@ -42,7 +42,7 @@ function EnemyUnit(props) {
                       return (
                          <img
                             className='sword'
-                            src='./images/war_sword.png'
+                            src='/images/war_sword.png'
                             alt='sword'
                          ></img>
                       );
@@ -56,7 +56,7 @@ function EnemyUnit(props) {
                         return (
                            <img
                               className='sword'
-                              src='./images/war_sword.png'
+                              src='/images/war_sword.png'
                               alt='sword'
                            ></img>
                         );
@@ -68,7 +68,7 @@ function EnemyUnit(props) {
          {!props.deactivationMap[props.id] && (
             <img
                className='card'
-               src='./images/card_back_war.png'
+               src='/images/card_back_war.png'
                alt='enemy back'
             ></img>
          )}
@@ -76,7 +76,7 @@ function EnemyUnit(props) {
             <img
                style={{ opacity: '.5' }}
                className='card'
-               src='./images/lost_card_back_war.png'
+               src='/images/lost_card_back_war.png'
                alt='enemy back'
             ></img>
          )}
