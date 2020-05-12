@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "1fd7d0d1e1dc04803c8e0a2161d4b53a",
+    "revision": "d8ef3bf84706b382f6f0edd4eab847ea",
     "url": "/war-client/index.html"
   },
   {
