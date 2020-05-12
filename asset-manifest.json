@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/war_client/static/css/main.877c2b02.chunk.css",
-    "main.js": "/war_client/static/js/main.8437a892.chunk.js",
-    "main.js.map": "/war_client/static/js/main.8437a892.chunk.js.map",
-    "runtime-main.js": "/war_client/static/js/runtime-main.524d7ee6.js",
-    "runtime-main.js.map": "/war_client/static/js/runtime-main.524d7ee6.js.map",
-    "static/css/2.69121389.chunk.css": "/war_client/static/css/2.69121389.chunk.css",
-    "static/js/2.52c3cb44.chunk.js": "/war_client/static/js/2.52c3cb44.chunk.js",
-    "static/js/2.52c3cb44.chunk.js.map": "/war_client/static/js/2.52c3cb44.chunk.js.map",
-    "index.html": "/war_client/index.html",
-    "precache-manifest.c3d02aebdbaae4fcb06392b1148b1977.js": "/war_client/precache-manifest.c3d02aebdbaae4fcb06392b1148b1977.js",
-    "service-worker.js": "/war_client/service-worker.js",
-    "static/css/2.69121389.chunk.css.map": "/war_client/static/css/2.69121389.chunk.css.map",
-    "static/css/main.877c2b02.chunk.css.map": "/war_client/static/css/main.877c2b02.chunk.css.map",
-    "static/js/2.52c3cb44.chunk.js.LICENSE.txt": "/war_client/static/js/2.52c3cb44.chunk.js.LICENSE.txt"
+    "main.css": "/war-client/static/css/main.877c2b02.chunk.css",
+    "main.js": "/war-client/static/js/main.5736ceaf.chunk.js",
+    "main.js.map": "/war-client/static/js/main.5736ceaf.chunk.js.map",
+    "runtime-main.js": "/war-client/static/js/runtime-main.abf20298.js",
+    "runtime-main.js.map": "/war-client/static/js/runtime-main.abf20298.js.map",
+    "static/css/2.69121389.chunk.css": "/war-client/static/css/2.69121389.chunk.css",
+    "static/js/2.36690ee1.chunk.js": "/war-client/static/js/2.36690ee1.chunk.js",
+    "static/js/2.36690ee1.chunk.js.map": "/war-client/static/js/2.36690ee1.chunk.js.map",
+    "index.html": "/war-client/index.html",
+    "precache-manifest.6d30e3a5ac9846558b8837cc989b29a5.js": "/war-client/precache-manifest.6d30e3a5ac9846558b8837cc989b29a5.js",
+    "service-worker.js": "/war-client/service-worker.js",
+    "static/css/2.69121389.chunk.css.map": "/war-client/static/css/2.69121389.chunk.css.map",
+    "static/css/main.877c2b02.chunk.css.map": "/war-client/static/css/main.877c2b02.chunk.css.map",
+    "static/js/2.36690ee1.chunk.js.LICENSE.txt": "/war-client/static/js/2.36690ee1.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.524d7ee6.js",
+    "static/js/runtime-main.abf20298.js",
     "static/css/2.69121389.chunk.css",
-    "static/js/2.52c3cb44.chunk.js",
+    "static/js/2.36690ee1.chunk.js",
     "static/css/main.877c2b02.chunk.css",
-    "static/js/main.8437a892.chunk.js"
+    "static/js/main.5736ceaf.chunk.js"
   ]
 }
