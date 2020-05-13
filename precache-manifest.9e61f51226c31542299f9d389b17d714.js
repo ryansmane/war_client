@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "796608fe640e1f139958bfbd6e86deb3",
+    "revision": "413c5ae759539444a4b14e96b1647c34",
     "url": "/war-client/index.html"
   },
   {
@@ -8,8 +8,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/war-client/static/css/2.69121389.chunk.css"
   },
   {
-    "revision": "234fdf32083d2445de43",
-    "url": "/war-client/static/css/main.067c829c.chunk.css"
+    "revision": "f82ac8734ecd1b34d09b",
+    "url": "/war-client/static/css/main.b7ef5eb7.chunk.css"
   },
   {
     "revision": "c30960b6b3ea780b12ac",
@@ -20,7 +20,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/war-client/static/js/2.36690ee1.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "234fdf32083d2445de43",
+    "revision": "f82ac8734ecd1b34d09b",
     "url": "/war-client/static/js/main.166f10eb.chunk.js"
   },
   {
