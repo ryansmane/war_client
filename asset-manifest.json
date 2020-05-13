@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/war-client/static/css/main.514a6665.chunk.css",
-    "main.js": "/war-client/static/js/main.166f10eb.chunk.js",
-    "main.js.map": "/war-client/static/js/main.166f10eb.chunk.js.map",
+    "main.css": "/war-client/static/css/main.42283456.chunk.css",
+    "main.js": "/war-client/static/js/main.cedd7465.chunk.js",
+    "main.js.map": "/war-client/static/js/main.cedd7465.chunk.js.map",
     "runtime-main.js": "/war-client/static/js/runtime-main.abf20298.js",
     "runtime-main.js.map": "/war-client/static/js/runtime-main.abf20298.js.map",
     "static/css/2.69121389.chunk.css": "/war-client/static/css/2.69121389.chunk.css",
     "static/js/2.36690ee1.chunk.js": "/war-client/static/js/2.36690ee1.chunk.js",
     "static/js/2.36690ee1.chunk.js.map": "/war-client/static/js/2.36690ee1.chunk.js.map",
     "index.html": "/war-client/index.html",
-    "precache-manifest.99112fbb4eccc7daa0cdf8e9fcc854bb.js": "/war-client/precache-manifest.99112fbb4eccc7daa0cdf8e9fcc854bb.js",
+    "precache-manifest.761c8d09d670fa9ba86b7e42c6f48b3c.js": "/war-client/precache-manifest.761c8d09d670fa9ba86b7e42c6f48b3c.js",
     "service-worker.js": "/war-client/service-worker.js",
     "static/css/2.69121389.chunk.css.map": "/war-client/static/css/2.69121389.chunk.css.map",
-    "static/css/main.514a6665.chunk.css.map": "/war-client/static/css/main.514a6665.chunk.css.map",
+    "static/css/main.42283456.chunk.css.map": "/war-client/static/css/main.42283456.chunk.css.map",
     "static/js/2.36690ee1.chunk.js.LICENSE.txt": "/war-client/static/js/2.36690ee1.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.abf20298.js",
     "static/css/2.69121389.chunk.css",
     "static/js/2.36690ee1.chunk.js",
-    "static/css/main.514a6665.chunk.css",
-    "static/js/main.166f10eb.chunk.js"
+    "static/css/main.42283456.chunk.css",
+    "static/js/main.cedd7465.chunk.js"
   ]
 }
