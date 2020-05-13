@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/war-client/static/css/main.65e1cdc6.chunk.css",
+    "main.css": "/war-client/static/css/main.4cf5faf3.chunk.css",
     "main.js": "/war-client/static/js/main.adccd2f9.chunk.js",
     "main.js.map": "/war-client/static/js/main.adccd2f9.chunk.js.map",
     "runtime-main.js": "/war-client/static/js/runtime-main.abf20298.js",
@@ -9,17 +9,17 @@
     "static/js/2.36690ee1.chunk.js": "/war-client/static/js/2.36690ee1.chunk.js",
     "static/js/2.36690ee1.chunk.js.map": "/war-client/static/js/2.36690ee1.chunk.js.map",
     "index.html": "/war-client/index.html",
-    "precache-manifest.f270738a4f71c5ef1868a94f7f1849bb.js": "/war-client/precache-manifest.f270738a4f71c5ef1868a94f7f1849bb.js",
+    "precache-manifest.359e3049919e623fa47e8e2f955f48d7.js": "/war-client/precache-manifest.359e3049919e623fa47e8e2f955f48d7.js",
     "service-worker.js": "/war-client/service-worker.js",
     "static/css/2.69121389.chunk.css.map": "/war-client/static/css/2.69121389.chunk.css.map",
-    "static/css/main.65e1cdc6.chunk.css.map": "/war-client/static/css/main.65e1cdc6.chunk.css.map",
+    "static/css/main.4cf5faf3.chunk.css.map": "/war-client/static/css/main.4cf5faf3.chunk.css.map",
     "static/js/2.36690ee1.chunk.js.LICENSE.txt": "/war-client/static/js/2.36690ee1.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.abf20298.js",
     "static/css/2.69121389.chunk.css",
     "static/js/2.36690ee1.chunk.js",
-    "static/css/main.65e1cdc6.chunk.css",
+    "static/css/main.4cf5faf3.chunk.css",
     "static/js/main.adccd2f9.chunk.js"
   ]
 }
